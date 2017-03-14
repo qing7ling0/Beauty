@@ -27,6 +27,7 @@ import com.lq.beauty.base.activity.BaseActivity;
 import com.lq.beauty.base.opengl.WGLSurfaceView;
 import com.mikepenz.iconics.context.IconicsContextWrapper;
 import com.mikepenz.iconics.context.IconicsLayoutInflater;
+import com.mikepenz.iconics.view.IconicsButton;
 
 import butterknife.*;
 
@@ -46,9 +47,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @BindView(R.id.main)
     protected CoordinatorLayout mCoordinatorLayout;
-//
-//    @BindView(R.id.mainEffectTypeName)
-//    protected TextView mEffectTypeName;
+
+    @BindView(R.id.mainEffectTypeName)
+    protected TextView mEffectTypeName;
+
+    @BindView(R.id.mainBtnStore)
+    protected IconicsButton mBtnStore;
 
     @OnClick(R.id.fab) void OnFloatingActionClicked(View view) {
         Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)

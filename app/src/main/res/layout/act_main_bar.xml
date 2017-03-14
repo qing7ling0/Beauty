@@ -16,16 +16,13 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="?actionBarSize"
             android:background="@color/colorPrimary"
-            app:logo="@drawable/ic_menu_manage"
-            app:navigationIcon="@mipmap/btn_switch_camera"
-            app:contentInsetStartWithNavigation="@dimen/fab_margin"
             app:popupTheme="@style/AppTheme.PopupOverlay" >
 
             <com.google.android.flexbox.FlexboxLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
                 app:alignContent="center"
                 app:alignItems="center"
                 >
@@ -35,7 +32,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_flexGrow="1"
-                    android:text="{ion-ionic}"
+                    android:text="R1"
+                    android:textAlignment="center"
                     android:textColor="@color/colorTitle"
                     android:textSize="20dp" />
 
@@ -44,26 +42,20 @@
                     android:text="{ion-ios-briefcase-outline}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:minWidth="0dp"
                     android:background="@drawable/com_button"
                     android:padding="5dp"
                     android:textSize="24sp"/>
 
-                <!--android:background="@drawable/com_button"-->
-                <!--android:padding="5dp"-->
                 <com.mikepenz.iconics.view.IconicsButton
                     android:id="@+id/mainBtnCamera"
-                    android:text="{ion-ionic}"
+                    android:text="{ion-ios-camera-outline}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:ico_contour_width="0dp"
-                    android:textSize="24dp"
-                    app:ico_size="48dp"
-                    app:ico_offset_x="10dp"
-                    app:ico_padding="0dp"/>
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_menu_send"/>
+                    android:minWidth="0dp"
+                    android:background="@drawable/com_button"
+                    android:padding="5dp"
+                    android:textSize="30sp"/>
             </com.google.android.flexbox.FlexboxLayout>
         </android.support.v7.widget.Toolbar>
 

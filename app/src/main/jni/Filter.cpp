@@ -122,15 +122,15 @@ namespace dream {
         glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
         glVertexAttribPointer(_GLAttribPosition, 2, GL_FLOAT, false, 0, CUBE);
         glEnableVertexAttribArray(_GLAttribPosition);
-        glVertexAttribPointer(_GLAttribTextureCoordinate, 2, GL_FLOAT, false, 0, TEXTURE_ROTATED_90);
+        glVertexAttribPointer(_GLAttribTextureCoordinate, 2, GL_FLOAT, false, 0, TEXTURE_ROTATED_270);
         glEnableVertexAttribArray(_GLAttribTextureCoordinate);
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, _textureID);
+        glBindTexture(GL_TEXTURE_EXTERNAL_OES, _textureID);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         glDisableVertexAttribArray(_GLAttribPosition);
         glDisableVertexAttribArray(_GLAttribTextureCoordinate);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindTexture(GL_TEXTURE_EXTERNAL_OES, 0);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         return _frameBufferTexture;

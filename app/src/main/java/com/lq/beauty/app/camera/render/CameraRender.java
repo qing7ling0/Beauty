@@ -59,14 +59,14 @@ public class CameraRender extends WRendererBase implements SurfaceTexture.OnFram
 
     }
 
-    @Override
-    protected void onRender(final GL10 gl) {
-        GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+//    @Override
+//    protected void onRender(final GL10 gl) {
+//        GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+//        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 //        mSurfaceTexture.updateTexImage();
 //        float[] mtx = new float[16];
 //        mSurfaceTexture.getTransformMatrix(mtx);
-    }
+//    }
 
     private int createTextureID()
     {
