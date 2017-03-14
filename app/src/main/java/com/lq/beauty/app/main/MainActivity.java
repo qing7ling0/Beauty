@@ -46,9 +46,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @BindView(R.id.main)
     protected CoordinatorLayout mCoordinatorLayout;
-
-    @BindView(R.id.mainEffectTypeName)
-    protected TextView mEffectTypeName;
+//
+//    @BindView(R.id.mainEffectTypeName)
+//    protected TextView mEffectTypeName;
 
     @OnClick(R.id.fab) void OnFloatingActionClicked(View view) {
         Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -117,10 +117,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     }
 
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(IconicsContextWrapper.wrap(newBase));
-    }
+//    @Override
+//    protected void attachBaseContext(Context newBase) {
+//        super.attachBaseContext(IconicsContextWrapper.wrap(newBase));
+//    }
 
     @Override
     public void onBackPressed() {

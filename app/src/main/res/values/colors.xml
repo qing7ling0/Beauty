@@ -7,6 +7,7 @@
     <color name="red">#FF0000</color>
     <color name="colorMain">#cc3399</color>
     <color name="colorBg">#cc3399</color>
+    <color name="colorBgActive">#cc8899</color>
     <color name="colorTitle">#FFFFFF</color>
     <color name="transparent">#00000000</color>
 </resources>

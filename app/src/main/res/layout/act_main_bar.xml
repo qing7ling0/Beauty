@@ -16,52 +16,55 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="200dp"
             android:background="@color/colorPrimary"
             app:logo="@drawable/ic_menu_manage"
             app:navigationIcon="@mipmap/btn_switch_camera"
             app:contentInsetStartWithNavigation="@dimen/fab_margin"
             app:popupTheme="@style/AppTheme.PopupOverlay" >
 
-
-            <LinearLayout
+            <com.google.android.flexbox.FlexboxLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/red"
-                android:layout_weight="1">
-
-                <ImageButton
-                    android:id="@+id/mainBtnStore"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/transparent"
-                    android:onClick="onBtnStoreClicked"
-                    android:padding="0dp"
-                    android:layout_gravity="center"
-                    app:ico_color="@color/white"
-                    app:ico_icon="ion-ios-briefcase-outline"
-                    app:ico_size="24dp" />
+                android:layout_height="200dp"
+                app:alignContent="center"
+                app:alignItems="center"
+                >
 
                 <TextView
                     android:id="@+id/mainEffectTypeName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="test"
+                    app:layout_flexGrow="1"
+                    android:text="{ion-ionic}"
                     android:textColor="@color/colorTitle"
                     android:textSize="20dp" />
 
-                <ImageButton
-                    android:id="@+id/mainBtnCamera"
+                <com.mikepenz.iconics.view.IconicsButton
+                    android:id="@+id/mainBtnStore"
+                    android:text="{ion-ios-briefcase-outline}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/transparent"
-                    android:padding="0dp"
-                    android:layout_gravity="right"
-                    app:ico_color="@color/white"
-                    app:ico_icon="ion-ios-camera-outline"
-                    app:ico_size="24dp" />
-            </LinearLayout>
+                    android:background="@drawable/com_button"
+                    android:padding="5dp"
+                    android:textSize="24sp"/>
+
+                <!--android:background="@drawable/com_button"-->
+                <!--android:padding="5dp"-->
+                <com.mikepenz.iconics.view.IconicsButton
+                    android:id="@+id/mainBtnCamera"
+                    android:text="{ion-ionic}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:ico_contour_width="0dp"
+                    android:textSize="24dp"
+                    app:ico_size="48dp"
+                    app:ico_offset_x="10dp"
+                    app:ico_padding="0dp"/>
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_menu_send"/>
+            </com.google.android.flexbox.FlexboxLayout>
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>

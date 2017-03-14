@@ -24,7 +24,7 @@ ext {
     compileSdkVersion = 25
     buildToolsVersion = "25"
     applicationId = "com.lq.beauty"
-    minSdkVersion = 19
+    minSdkVersion = 21
     targetSdkVersion = 25
     versionCode = 1
     versionName = "v1"
