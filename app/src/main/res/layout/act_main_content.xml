@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content_main"
@@ -8,9 +9,57 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".app.main.MainActivity"
     tools:showIn="@layout/act_main_bar">
-
-    <com.lq.beauty.base.opengl.WGLSurfaceView
-        android:id="@+id/CameraSurfaceView"
+    <com.google.android.flexbox.FlexboxLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:flexDirection="column">
+        <com.lq.beauty.base.widget.SquareRelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.lq.beauty.base.opengl.WGLSurfaceView
+                android:id="@+id/CameraSurfaceView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </com.lq.beauty.base.widget.SquareRelativeLayout>
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/mainBottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            app:layout_flexGrow="1"
+            app:alignContent="center"
+            app:alignItems="center"
+            app:justifyContent="space_around">
+
+            <com.mikepenz.iconics.view.IconicsButton
+                android:id="@+id/mainBtnHistory"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/com_button_circle_bg"
+                android:minWidth="0dp"
+                android:padding="5dp"
+                android:textColor="@color/colorBg"
+                android:text="{ion-ios-box-outline}"
+                android:textSize="30sp" />
+
+            <com.lq.beauty.app.main.widget.RecordButton
+                android:id="@+id/mainBtnRecord"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:background="@drawable/main_btn_record_bg"/>
+
+            <com.mikepenz.iconics.view.IconicsButton
+                android:id="@+id/mainBtnEffectType"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/com_button_circle_bg"
+                android:minWidth="0dp"
+                android:padding="5dp"
+                android:textColor="@color/colorBg"
+                android:text="{ion-ios-color-filter-outline}"
+                android:textSize="30sp" />
+        </com.google.android.flexbox.FlexboxLayout>
+
+    </com.google.android.flexbox.FlexboxLayout>
 </RelativeLayout>

@@ -1,8 +1,16 @@
 package com.lq.beauty.app.main;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.RippleDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.Shape;
 import android.os.Build;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -19,10 +27,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.lq.beauty.R;
 import com.lq.beauty.app.camera.render.CameraRender;
+import com.lq.beauty.app.main.widget.RecordButton;
 import com.lq.beauty.base.activity.BaseActivity;
 import com.lq.beauty.base.opengl.WGLSurfaceView;
 import com.mikepenz.iconics.context.IconicsContextWrapper;
@@ -54,10 +67,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @BindView(R.id.mainBtnStore)
     protected IconicsButton mBtnStore;
 
-    @OnClick(R.id.fab) void OnFloatingActionClicked(View view) {
-        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
-    }
+    @BindView(R.id.mainBtnRecord)
+    protected RecordButton mBtnRecord;
 
     @Override
     protected int getContentView() { return R.layout.act_main; }
@@ -114,6 +125,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             ActivityCompat.requestPermissions(MainActivity.this, new String[] { Manifest.permission.CAMERA }, 1);
         }
         mWGLSurfaceView.setWRenderer(new CameraRender());
+
+//        RippleDrawable rd = (RippleDrawable) mBtnRecord.getBackground();
+//
+//
+//        ShapeDrawable shap = (ShapeDrawable) rd.getDrawable(0);
+//
+//        AnimatorSet animation = (AnimatorSet) AnimatorInflater.loadAnimator(
+//                MainActivity.this, R.anim.ani_main_btn_record);
+//        // 启动动画
+//        animation.setTarget(shap);
+//        animation.start();
     }
 
     @Override
