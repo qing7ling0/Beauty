@@ -47,7 +47,8 @@
                 android:id="@+id/mainBtnRecord"
                 android:layout_width="75dp"
                 android:layout_height="75dp"
-                android:background="@drawable/main_btn_record_bg"/>
+                android:background="@drawable/main_btn_record_bg"
+                app:alpha="0.5"/>
 
             <com.mikepenz.iconics.view.IconicsButton
                 android:id="@+id/mainBtnEffectType"

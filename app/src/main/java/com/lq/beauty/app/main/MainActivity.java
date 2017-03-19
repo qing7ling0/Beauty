@@ -70,6 +70,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @BindView(R.id.mainBtnRecord)
     protected RecordButton mBtnRecord;
 
+    @OnClick(R.id.mainBtnRecord) void onClicked() {
+        mBtnRecord.animateCheckedState();
+    }
+
     @Override
     protected int getContentView() { return R.layout.act_main; }
 
