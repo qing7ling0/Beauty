@@ -8,8 +8,8 @@ import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 
 import com.lq.beauty.app.camera.CameraEngine;
-import com.lq.beauty.app.camera.utils.WCameraInfo;
-import com.lq.beauty.app.encoder.video.TextureMovieEncoder;
+import com.lq.beauty.app.camera.WCameraInfo;
+import com.lq.beauty.app.camera.video.TextureMovieHandler;
 import com.lq.beauty.base.utils.OpenGlUtils;
 
 import java.io.File;
@@ -34,7 +34,7 @@ public class MagicCameraView extends MagicBaseView {
     private static final int RECORDING_OFF = 0;
     private static final int RECORDING_ON = 1;
     private static final int RECORDING_RESUMED = 2;
-    private static TextureMovieEncoder videoEncoder = new TextureMovieEncoder();
+    private static TextureMovieHandler videoEncoder = new TextureMovieHandler();
 
     private File outputFile;
 
@@ -81,9 +81,7 @@ public class MagicCameraView extends MagicBaseView {
                 case RECORDING_OFF:
                     WCameraInfo info = CameraEngine.getCameraInfo();
                     videoEncoder.setPreviewSize(info.previewWidth, info.pictureHeight);
-                    videoEncoder.setTextureBuffer(gLTextureBuffer);
-                    videoEncoder.setCubeBuffer(gLCubeBuffer);
-                    videoEncoder.startRecording(new TextureMovieEncoder.EncoderConfig(outputFile, info.previewWidth, info.pictureHeight, 1000000, EGL14.eglGetCurrentContext(), info));
+                    videoEncoder.startRecording(new TextureMovieHandler.EncoderConfig(outputFile, info.previewWidth, info.pictureHeight, 1000000, EGL14.eglGetCurrentContext(), info));
                     recordingStatus = RECORDING_ON;
                     break;
                 case RECORDING_RESUMED:
@@ -91,6 +89,7 @@ public class MagicCameraView extends MagicBaseView {
                     recordingStatus = RECORDING_ON;
                     break;
                 case RECORDING_ON:
+                    videoEncoder.frameAvailable(surfaceTexture);
                     break;
                 default:
                     throw new RuntimeException("unknown status " + recordingStatus);
@@ -108,18 +107,6 @@ public class MagicCameraView extends MagicBaseView {
                     throw new RuntimeException("unknown status " + recordingStatus);
             }
         }
-        float[] mtx = new float[16];
-        surfaceTexture.getTransformMatrix(mtx);
-//        cameraInputFilter.setTextureTransformMatrix(mtx);
-        int id = textureId;
-//        if(filter == null){
-//            cameraInputFilter.onDrawFrame(textureId, gLCubeBuffer, gLTextureBuffer);
-//        }else{
-//            id = cameraInputFilter.onDrawToTexture(textureId);
-//            filter.onDrawFrame(id, gLCubeBuffer, gLTextureBuffer);
-//        }
-        videoEncoder.setTextureId(id);
-        videoEncoder.frameAvailable(surfaceTexture);
     }
 
     private SurfaceTexture.OnFrameAvailableListener onFrameAvailableListener = new SurfaceTexture.OnFrameAvailableListener() {

@@ -68,8 +68,12 @@ public class WRendererBase implements GLSurfaceView.Renderer {
 
     protected void onRender(final GL10 gl) {
         onRenderBefore(gl);
-        WRendererBase.nativeRender();
+        onDraw();
         onRenderAfter(gl);
+    }
+
+    protected void onDraw() {
+        WRendererBase.nativeRender();
     }
 
     protected void onRenderAfter(final GL10 gl) {}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lq.beauty.app.encoder.gles;
+package com.lq.beauty.base.opengl.gles;
 
 import android.graphics.Bitmap;
 import android.opengl.EGL14;

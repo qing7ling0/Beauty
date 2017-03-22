@@ -49,6 +49,7 @@ public class RecordButton extends android.support.v7.widget.AppCompatButton {
 
     public RecordButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
         onInit(attrs);
     }
 
