@@ -1,4 +1,4 @@
-package com.lq.beauty.app.camera.utils;
+package com.lq.beauty.app.camera;
 
 /**
  * Created by why8222 on 2016/2/25.

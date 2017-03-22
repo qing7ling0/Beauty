@@ -7,11 +7,8 @@ import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Size;
 import android.view.SurfaceView;
 
-
-import com.lq.beauty.app.camera.utils.CameraUtils;
-import com.lq.beauty.app.camera.utils.WCameraInfo;
-
 import java.io.IOException;
+import java.util.List;
 
 public class CameraEngine {
     private static Camera camera = null;
@@ -86,9 +83,9 @@ public class CameraEngine {
                 Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
             parameters.setFocusMode(Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
         }
-        Size previewSize = CameraUtils.getLargePreviewSize(camera);
+        Size previewSize = getLargePreviewSize(camera);
         parameters.setPreviewSize(previewSize.width, previewSize.height);
-        Size pictureSize = CameraUtils.getLargePictureSize(camera);
+        Size pictureSize = getLargePictureSize(camera);
         parameters.setPictureSize(pictureSize.width, pictureSize.height);
         parameters.setRotation(90);
         camera.setParameters(parameters);
@@ -146,5 +143,33 @@ public class CameraEngine {
         info.pictureWidth = size.width;
         info.pictureHeight = size.height;
         return info;
+    }
+
+
+    public static Camera.Size getLargePictureSize(Camera camera){
+        if(camera != null){
+            List<Size> sizes = camera.getParameters().getSupportedPictureSizes();
+            Camera.Size temp = sizes.get(0);
+            for(int i = 1;i < sizes.size();i ++){
+                float scale = (float)(sizes.get(i).height) / sizes.get(i).width;
+                if(temp.width < sizes.get(i).width && scale < 0.6f && scale > 0.5f)
+                    temp = sizes.get(i);
+            }
+            return temp;
+        }
+        return null;
+    }
+
+    public static Camera.Size getLargePreviewSize(Camera camera){
+        if(camera != null){
+            List<Camera.Size> sizes = camera.getParameters().getSupportedPreviewSizes();
+            Camera.Size temp = sizes.get(0);
+            for(int i = 1;i < sizes.size();i ++){
+                if(temp.width < sizes.get(i).width)
+                    temp = sizes.get(i);
+            }
+            return temp;
+        }
+        return null;
     }
 }

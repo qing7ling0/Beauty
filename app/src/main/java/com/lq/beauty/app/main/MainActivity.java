@@ -12,6 +12,7 @@ import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -72,7 +73,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @OnClick(R.id.mainBtnRecord) void onClicked() {
         mBtnRecord.animateCheckedState();
+        isRecording = !isRecording;
+        cameraRender.changeRecordingState(isRecording);
     }
+
+    protected boolean isRecording;
+    protected CameraRender cameraRender;
 
     @Override
     protected int getContentView() { return R.layout.act_main; }
@@ -128,7 +134,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (PermissionChecker.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[] { Manifest.permission.CAMERA }, 1);
         }
-        mWGLSurfaceView.setWRenderer(new CameraRender());
+        cameraRender = new CameraRender();
+        mWGLSurfaceView.setWRenderer(cameraRender);
 
 //        RippleDrawable rd = (RippleDrawable) mBtnRecord.getBackground();
 //
@@ -144,7 +151,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     protected void initData() {
-
+        isRecording = false;
     }
 
 //    @Override

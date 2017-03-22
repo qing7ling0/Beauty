@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.lq.beauty.app.encoder.video;
+package com.lq.beauty.app.camera.video;
 
 import android.graphics.SurfaceTexture;
 import android.view.Surface;
 
-import com.lq.beauty.app.encoder.gles.EglCore;
-import com.lq.beauty.app.encoder.gles.EglSurfaceBase;
+import com.lq.beauty.base.opengl.gles.EglCore;
+import com.lq.beauty.base.opengl.gles.EglSurfaceBase;
 
 
 /**

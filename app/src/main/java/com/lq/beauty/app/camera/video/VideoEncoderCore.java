@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lq.beauty.app.encoder.video;
+package com.lq.beauty.app.camera.video;
 
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;

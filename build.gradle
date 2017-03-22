@@ -21,11 +21,11 @@ task clean(type: Delete) {
 }
 
 ext {
-    compileSdkVersion = 25
+    compileSdkVersion = 23
     buildToolsVersion = "25"
     applicationId = "com.lq.beauty"
     minSdkVersion = 21
-    targetSdkVersion = 25
+    targetSdkVersion = 23
     versionCode = 1
     versionName = "v1"
     supportVersion = '25.0.0'
