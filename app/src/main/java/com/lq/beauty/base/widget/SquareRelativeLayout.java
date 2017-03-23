@@ -14,6 +14,15 @@ public class SquareRelativeLayout extends RelativeLayout {
 
     // 是否适应宽度
     protected boolean mAdapterWithWidth;
+    protected OnSizeChangeListener onSizeChangeListener;
+
+    public OnSizeChangeListener getOnSizeChangeListener() {
+        return onSizeChangeListener;
+    }
+
+    public void setOnSizeChangeListener(OnSizeChangeListener onSizeChangeListener) {
+        this.onSizeChangeListener = onSizeChangeListener;
+    }
 
     public SquareRelativeLayout(Context context) {
         super(context);
@@ -32,10 +41,11 @@ public class SquareRelativeLayout extends RelativeLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int r = heightMeasureSpec;
         if (isAdapterWithWidth())
-            super.onMeasure(widthMeasureSpec, widthMeasureSpec);
-        else
-            super.onMeasure(heightMeasureSpec, heightMeasureSpec);
+            r = widthMeasureSpec;
+        super.onMeasure(r, r);
+        if (onSizeChangeListener != null) onSizeChangeListener.onSizeChanged(r, r);
     }
 
     public void setAdapterWithWidth(boolean adapterWithWidth) {
@@ -44,5 +54,9 @@ public class SquareRelativeLayout extends RelativeLayout {
 
     public boolean isAdapterWithWidth() {
         return mAdapterWithWidth;
+    }
+
+    public interface OnSizeChangeListener {
+        void onSizeChanged(int width, int height);
     }
 }

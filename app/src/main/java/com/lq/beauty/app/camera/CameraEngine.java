@@ -15,9 +15,32 @@ public class CameraEngine {
     private static int cameraID = 0;
     private static SurfaceTexture surfaceTexture;
     private static SurfaceView surfaceView;
+    private static int screenPreviewWidth;
+    private static int screenPreviewHeight;
 
     public static Camera getCamera(){
         return camera;
+    }
+
+    public static int getScreenPreviewWidth() {
+        return screenPreviewWidth;
+    }
+
+    public static void setScreenPreviewWidth(int screenPreviewWidth) {
+        CameraEngine.screenPreviewWidth = screenPreviewWidth;
+    }
+
+    public static int getScreenPreviewHeight() {
+        return screenPreviewHeight;
+    }
+
+    public static void setScreenPreviewHeight(int screenPreviewHeight) {
+        CameraEngine.screenPreviewHeight = screenPreviewHeight;
+    }
+
+    public static void setScreenPreviewSize(int width, int height) {
+        setScreenPreviewWidth(width);
+        setScreenPreviewHeight(height);
     }
 
     public static boolean openCamera(){
@@ -83,9 +106,9 @@ public class CameraEngine {
                 Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
             parameters.setFocusMode(Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
         }
-        Size previewSize = getLargePreviewSize(camera);
+        Size previewSize = getCeilPreviewSize(camera, screenPreviewWidth, screenPreviewHeight);
         parameters.setPreviewSize(previewSize.width, previewSize.height);
-        Size pictureSize = getLargePictureSize(camera);
+        Size pictureSize = getCeilPictureSize(camera, screenPreviewWidth, screenPreviewHeight);
         parameters.setPictureSize(pictureSize.width, pictureSize.height);
         parameters.setRotation(90);
         camera.setParameters(parameters);
@@ -152,10 +175,33 @@ public class CameraEngine {
             Camera.Size temp = sizes.get(0);
             for(int i = 1;i < sizes.size();i ++){
                 float scale = (float)(sizes.get(i).height) / sizes.get(i).width;
-                if(temp.width < sizes.get(i).width && scale < 0.6f && scale > 0.5f)
+                if(temp.width < sizes.get(i).width)
                     temp = sizes.get(i);
             }
             return temp;
+        }
+        return null;
+    }
+
+    public static Camera.Size getCeilPictureSize(Camera camera, int width, int height){
+        if(camera != null){
+            List<Camera.Size> sizes = camera.getParameters().getSupportedPictureSizes();
+            Camera.Size ret = null;
+            for(int i=0; i<sizes.size(); i++) {
+                Camera.Size temp = sizes.get(i);
+                if (temp.width >= width && temp.height >= height) {
+                    if (ret == null) {
+                        ret = temp;
+                    } else {
+                        if (ret.width * ret.height > temp.width*temp.height) {
+                            ret = temp;
+                        }
+                    }
+                }
+            }
+            if (ret == null) return getLargePictureSize(camera);
+
+            return ret;
         }
         return null;
     }
@@ -169,6 +215,29 @@ public class CameraEngine {
                     temp = sizes.get(i);
             }
             return temp;
+        }
+        return null;
+    }
+
+    public static Camera.Size getCeilPreviewSize(Camera camera, int width, int height){
+        if(camera != null){
+            List<Camera.Size> sizes = camera.getParameters().getSupportedPreviewSizes();
+            Camera.Size ret = null;
+            for(int i=0; i<sizes.size(); i++) {
+                Camera.Size temp = sizes.get(i);
+                if (temp.width >= width && temp.height >= height) {
+                    if (ret == null) {
+                        ret = temp;
+                    } else {
+                        if (ret.width * ret.height > temp.width*temp.height) {
+                            ret = temp;
+                        }
+                    }
+                }
+            }
+            if (ret == null) return getLargePreviewSize(camera);
+
+            return ret;
         }
         return null;
     }
