@@ -23,7 +23,7 @@ extern "C" {
     }
 
     JNIEXPORT void JNICALL
-    Java_com_lq_beauty_app_camera_render_CameraRender_setTextureID(JNIEnv *env, jobject instance, jint id) {
+    Java_com_lq_beauty_app_camera_render_CameraRender_nativeSetTextureID(JNIEnv *env, jobject instance, jint id) {
 
         WDream::GetInstance()->GetFilterRenderer()->GetFilterCameraInput()->SetTextureID(id);
     }
@@ -32,6 +32,14 @@ extern "C" {
     Java_com_lq_beauty_app_camera_render_CameraRender_setFilterType(JNIEnv *env, jobject instance,
                                                                        jint type) {
         WDream::GetInstance()->GetFilterRenderer()->SetFilterType(type);
+
+    }
+
+    JNIEXPORT void JNICALL
+    Java_com_lq_beauty_app_camera_render_CameraRender_nativeSetCameraSize(JNIEnv *env, jobject instance,
+                                                                    jint width, jint height) {
+
+        WDream::GetInstance()->GetFilterRenderer()->GetFilterCameraInput()->SetCameraSize(width, height);
 
     }
 

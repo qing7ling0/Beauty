@@ -9,20 +9,12 @@ import android.os.Build;
 
 @TargetApi(Build.VERSION_CODES.CUPCAKE)
 public class WRendererBase implements GLSurfaceView.Renderer {
-    protected final static long NANOSECONDSPERSECOND = 1000000000L;
-    protected final static long NANOSECONDSPERMICROSECOND = 1000000;
-
-    protected static long sAnimationInterval = (long) (1.0 / 60 * WRendererBase.NANOSECONDSPERSECOND);
 
     protected long mLastTickInNanoSeconds;
     protected int mScreenWidth;
     protected int mScreenHeight;
     protected boolean mNativeInitCompleted = false;
     protected WGLSurfaceView mWGLSurfaceView = null;
-
-    public static void setAnimationInterval(final double animationInterval) {
-        WRendererBase.sAnimationInterval = (long) (animationInterval * WRendererBase.NANOSECONDSPERSECOND);
-    }
 
     public void setWGLSurfaceView(WGLSurfaceView view) {
         this.mWGLSurfaceView = view;
@@ -47,21 +39,7 @@ public class WRendererBase implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(final GL10 gl) {
-        if (sAnimationInterval <= 1.0 / 60 * WRendererBase.NANOSECONDSPERSECOND) {
-            onRender(gl);
-        } else {
-            final long now = System.nanoTime();
-            final long interval = now - this.mLastTickInNanoSeconds;
-        
-            if (interval < WRendererBase.sAnimationInterval) {
-                try {
-                    Thread.sleep((WRendererBase.sAnimationInterval - interval) / WRendererBase.NANOSECONDSPERMICROSECOND);
-                } catch (final Exception e) {
-                }
-            }
-            this.mLastTickInNanoSeconds = System.nanoTime();
-            onRender(gl);
-        }
+        onRender(gl);
     }
 
     protected void onRenderBefore(final GL10 gl) {}
@@ -72,7 +50,7 @@ public class WRendererBase implements GLSurfaceView.Renderer {
         onRenderAfter(gl);
     }
 
-    protected void onDraw() {
+    protected synchronized void onDraw() {
         WRendererBase.nativeRender();
     }
 

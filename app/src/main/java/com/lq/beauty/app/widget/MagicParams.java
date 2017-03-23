@@ -12,7 +12,7 @@ public class MagicParams {
     public static MagicBaseView magicBaseView;
 
     public static String videoPath = Environment.getExternalStorageDirectory().getPath();
-    public static String videoName = "MagicCamera_test.mp4";
+    public static String videoName = "MagicCamera_test2.mp4";
 
     public static int beautyLevel = 5;
 

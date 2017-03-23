@@ -35,6 +35,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.lq.beauty.R;
+import com.lq.beauty.app.camera.CameraEngine;
 import com.lq.beauty.app.camera.render.CameraRender;
 import com.lq.beauty.app.main.widget.RecordButton;
 import com.lq.beauty.base.activity.BaseActivity;

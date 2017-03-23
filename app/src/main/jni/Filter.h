@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <GLES2/gl2.h>
 
+#include "WDefine.h"
+
 namespace dream {
     class GLProgram;
 
@@ -46,6 +48,13 @@ namespace dream {
         GLuint _frameWidth;
         GLuint _frameHeight;
 
+        float _vexCrood[8];
+        float _vexPosition[8];
+
+        GLuint _cameraWidth;
+        GLuint _cameraHeight;
+        ScaleType _cameraScaleType;
+
     public:
         FilterCameraInput();
 
@@ -56,6 +65,10 @@ namespace dream {
         virtual void Render();
 
         virtual void OnSizeChange(int width, int height);
+
+        void SetCameraSize(int width, int height);
+
+        void InitCamera();
 
         GLuint RenderFrameTexture();
 

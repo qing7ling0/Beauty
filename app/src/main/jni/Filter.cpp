@@ -45,7 +45,6 @@ namespace dream {
     : _textureID(-1)
     , _width(0)
     , _height(0) {
-
     }
 
     Filter::~Filter() {}
@@ -61,7 +60,10 @@ namespace dream {
     , _frameBuffer(NO_TEXTURE)
     , _frameBufferTexture(NO_TEXTURE)
     , _frameHeight(0)
-    , _frameWidth(0) {
+    , _frameWidth(0)
+    , _cameraWidth(0)
+    , _cameraHeight(0)
+    , _cameraScaleType(ScaleType::CenterInside){
 
     }
 
@@ -73,6 +75,9 @@ namespace dream {
     }
 
     void FilterCameraInput::Init() {
+
+        Texture2D::getRotation(ROTATION_90, true, false, _vexCrood);
+
         _pGLProgram = new GLProgram();
         _pGLProgram->Init(NO_FILTER_VERTEX_SHADER, NO_SURFACE_FILTER_FRAGMENT_SHADER);
 
@@ -86,6 +91,45 @@ namespace dream {
             _frameWidth = width;
             _frameHeight = height;
             InitFrameTexture();
+            InitCamera();
+        }
+    }
+
+    void FilterCameraInput::InitCamera() {
+        Texture2D::copyVexture(CUBE, _vexPosition, 8);
+        if (_frameHeight==0 || _frameWidth==0 || _cameraHeight==0 || _cameraWidth==0) return;
+        if (_cameraScaleType == ScaleType::FixXY) {
+            return;
+        } else if (_cameraScaleType == ScaleType::CenterInside) {
+            float ratioW = _frameWidth * 1.f / _cameraWidth;
+            float ratioH = _frameHeight * 1.f / _cameraHeight;
+            float ratio = ratioW > ratioH ? ratioH : ratioW;
+            ratioW = _cameraWidth * ratio / _frameWidth;
+            ratioH = _cameraHeight * ratio / _frameHeight;
+            _vexPosition[0] = _vexPosition[4] = _vexPosition[0] * ratioH;
+            _vexPosition[2] = _vexPosition[6] = _vexPosition[2] * ratioH;
+            _vexPosition[1] = _vexPosition[3] = _vexPosition[1] * ratioW;
+            _vexPosition[5] = _vexPosition[7] = _vexPosition[5] * ratioW;
+
+        } else if (_cameraScaleType == ScaleType::CenterCrop) {
+            float ratioW = _frameWidth * 1.f / _cameraWidth;
+            float ratioH = _frameHeight * 1.f / _cameraHeight;
+            float ratio = ratioW > ratioH ? ratioW : ratioH;
+            ratioW = _cameraWidth * ratio / _frameWidth;
+            ratioH = _cameraHeight * ratio / _frameHeight;
+            _vexPosition[0] = _vexPosition[4] = _vexPosition[0] * ratioW;
+            _vexPosition[2] = _vexPosition[6] = _vexPosition[2] * ratioW;
+            _vexPosition[1] = _vexPosition[3] = _vexPosition[1] * ratioH;
+            _vexPosition[5] = _vexPosition[7] = _vexPosition[5] * ratioH;
+        }
+    }
+
+    void FilterCameraInput::SetCameraSize(int width, int height) {
+        if (_cameraWidth != width || _cameraHeight != height) {
+            _cameraWidth = width;
+            _cameraHeight = height;
+
+            InitCamera();
         }
     }
 
@@ -118,11 +162,12 @@ namespace dream {
         if(_frameBuffer == NO_TEXTURE) return NO_TEXTURE;
 
         _pGLProgram->Use();
+        glViewport(0, 0, _frameWidth, _frameHeight);
 
         glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
-        glVertexAttribPointer(_GLAttribPosition, 2, GL_FLOAT, false, 0, CUBE);
+        glVertexAttribPointer(_GLAttribPosition, 2, GL_FLOAT, false, 0, _vexPosition);
         glEnableVertexAttribArray(_GLAttribPosition);
-        glVertexAttribPointer(_GLAttribTextureCoordinate, 2, GL_FLOAT, false, 0, TEXTURE_ROTATED_270);
+        glVertexAttribPointer(_GLAttribTextureCoordinate, 2, GL_FLOAT, false, 0, _vexCrood);
         glEnableVertexAttribArray(_GLAttribTextureCoordinate);
 
         glActiveTexture(GL_TEXTURE0);

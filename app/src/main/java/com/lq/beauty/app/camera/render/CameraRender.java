@@ -1,9 +1,12 @@
 package com.lq.beauty.app.camera.render;
 
 import android.graphics.SurfaceTexture;
+import android.hardware.Camera;
 import android.opengl.EGL14;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
+import android.util.Log;
 
 import com.lq.beauty.app.camera.CameraEngine;
 import com.lq.beauty.app.camera.WCameraInfo;
@@ -12,6 +15,7 @@ import com.lq.beauty.app.widget.MagicParams;
 import com.lq.beauty.base.opengl.WRendererBase;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -32,13 +36,12 @@ public class CameraRender extends WRendererBase implements SurfaceTexture.OnFram
     private int recordingStatus;
     private File outputFile;
 
-    private static TextureMovieHandler videoHandler;
+    private static TextureMovieHandler videoHandler = new TextureMovieHandler();
 
     public CameraRender() {
         super();
         recordingStatus = -1;
         recordingEnabled = false;
-        videoHandler = new TextureMovieHandler();
         videoHandler.setMovieRender(this);
         outputFile = new File(MagicParams.videoPath, MagicParams.videoName);
     }
@@ -46,6 +49,9 @@ public class CameraRender extends WRendererBase implements SurfaceTexture.OnFram
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         super.onSurfaceCreated(gl, config);
+        if (mWGLSurfaceView != null) {
+            mWGLSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        }
 
         recordingEnabled = videoHandler.isRecording();
         if (recordingEnabled)
@@ -56,66 +62,84 @@ public class CameraRender extends WRendererBase implements SurfaceTexture.OnFram
         surfaceTextureID = createTextureID();
         surfaceTexture = new SurfaceTexture(surfaceTextureID);
         surfaceTexture.setOnFrameAvailableListener(this);
-        CameraEngine.openCamera();
 
         setFilterType(0);
-        setTextureID(surfaceTextureID);
+        nativeSetTextureID(surfaceTextureID);
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         super.onSurfaceChanged(gl, width, height);
 
+        CameraEngine.setScreenPreviewSize(width, height);
         if (CameraEngine.getCamera() == null)
             CameraEngine.openCamera();
 
         if (surfaceTexture != null)
             CameraEngine.startPreview(surfaceTexture);
+        if (CameraEngine.getCamera() != null) {
+            WCameraInfo info = CameraEngine.getCameraInfo();
+            int w = info.previewWidth;
+            int h = info.pictureHeight;
+            if (info.orientation == 90 || info.orientation == 270) {
+                w = info.pictureHeight;
+                h = info.pictureWidth;
+            }
+            nativeSetCameraSize(w, h);
+        }
     }
 
     @Override
     protected void onRenderBefore(final GL10 gl) {
         GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        
+
         if (surfaceTexture != null){
             surfaceTexture.updateTexImage();
+
+            if (recordingEnabled) {
+                switch (recordingStatus) {
+                    case RECORDING_OFF:
+                        WCameraInfo info = CameraEngine.getCameraInfo();
+                        videoHandler.setPreviewSize(info.previewWidth, info.pictureHeight);
+                        videoHandler.startRecording(
+                                new TextureMovieHandler.EncoderConfig(
+                                        outputFile,
+                                        info.previewWidth,
+                                        info.pictureHeight,
+                                        1000000,
+                                        EGL14.eglGetCurrentContext(),
+                                        info));
+                        recordingStatus = RECORDING_ON;
+                        break;
+                    case RECORDING_RESUMED:
+                        videoHandler.updateSharedContext(EGL14.eglGetCurrentContext());
+                        recordingStatus = RECORDING_ON;
+                        break;
+                    case RECORDING_ON:
+                        videoHandler.frameAvailable(surfaceTexture);
+                        break;
+                    default:
+                        throw new RuntimeException("unknown status " + recordingStatus);
+                }
+            } else {
+                switch (recordingStatus) {
+                    case RECORDING_ON:
+                    case RECORDING_RESUMED:
+                        videoHandler.stopRecording();
+                        recordingStatus = RECORDING_OFF;
+                        break;
+                    case RECORDING_OFF:
+                        break;
+                    default:
+                        throw new RuntimeException("unknown status " + recordingStatus);
+                }
+            }
         }
     }
 
     @Override
     protected void onRenderAfter(final GL10 gl) {
-        if (recordingEnabled) {
-            switch (recordingStatus) {
-                case RECORDING_OFF:
-                    WCameraInfo info = CameraEngine.getCameraInfo();
-                    videoHandler.setPreviewSize(info.previewWidth, info.pictureHeight);
-                    videoHandler.startRecording(new TextureMovieHandler.EncoderConfig(outputFile, info.previewWidth, info.pictureHeight, 1000000, EGL14.eglGetCurrentContext(), info));
-                    recordingStatus = RECORDING_ON;
-                    break;
-                case RECORDING_RESUMED:
-                    videoHandler.updateSharedContext(EGL14.eglGetCurrentContext());
-                    recordingStatus = RECORDING_ON;
-                    break;
-                case RECORDING_ON:
-                    videoHandler.frameAvailable(surfaceTexture);
-                    break;
-                default:
-                    throw new RuntimeException("unknown status " + recordingStatus);
-            }
-        } else {
-            switch (recordingStatus) {
-                case RECORDING_ON:
-                case RECORDING_RESUMED:
-                    videoHandler.stopRecording();
-                    recordingStatus = RECORDING_OFF;
-                    break;
-                case RECORDING_OFF:
-                    break;
-                default:
-                    throw new RuntimeException("unknown status " + recordingStatus);
-            }
-        }
     }
 
 //    @Override
@@ -154,14 +178,14 @@ public class CameraRender extends WRendererBase implements SurfaceTexture.OnFram
         recordingEnabled = isRecording;
     }
 
-    private native void setTextureID(int id);
+    private native void nativeSetCameraSize(int width, int height);
+
+    private native void nativeSetTextureID(int id);
 
     private native void setFilterType(int type);
 
     @Override
     public void render() {
-        synchronized (this) {
-            this.onDraw();
-        }
+        this.onDraw();
     }
 }

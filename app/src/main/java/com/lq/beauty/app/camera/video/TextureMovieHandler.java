@@ -15,8 +15,15 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
+import java.util.ArrayList;
+
+
+/**
+ * Encode a movie from frames rendered from an external texture image.
+ */
 public class TextureMovieHandler implements Runnable {
-    private static final String TAG = "";
+    private static final String TAG = "TextureMovieHandler";
+    private static final boolean VERBOSE = false;
 
     private static final int MSG_START_RECORDING = 0;
     private static final int MSG_STOP_RECORDING = 1;
@@ -31,25 +38,22 @@ public class TextureMovieHandler implements Runnable {
 
     private volatile EncoderHandler mHandler;
 
-    private Object mReadyFence = new Object();
+    private Object mReadyFence = new Object();      // guards ready/running
     private boolean mReady;
     private boolean mRunning;
-
     private IMovieRender movieRender;
+    private long lastSurfaceTime = 0;
 
     public TextureMovieHandler() {
 
     }
 
+    public void setMovieRender(IMovieRender render) {
+        movieRender = render;
+    }
+
     /**
      * Encoder configuration.
-     * <p>
-     * Object is immutable, which means we can safely pass it between threads without
-     * explicit synchronization (and don't need to worry about it getting tweaked out from
-     * under us).
-     * <p>
-     * TODO: make frame rate and iframe interval configurable?  Maybe use builder pattern
-     *       with reasonable defaults for those and bit rate.
      */
     public static class EncoderConfig {
         final File mOutputFile;
@@ -74,10 +78,9 @@ public class TextureMovieHandler implements Runnable {
         }
     }
 
-    public void setMovieRender(IMovieRender render) {
-        this.movieRender = render;
-    }
-
+    /**
+     * Tells the video recorder to start recording.  (Call from non-encoder thread.)
+     */
     public void startRecording(EncoderConfig config) {
         Log.d(TAG, "Encoder: startRecording()");
         synchronized (mReadyFence) {
@@ -99,9 +102,20 @@ public class TextureMovieHandler implements Runnable {
         mHandler.sendMessage(mHandler.obtainMessage(MSG_START_RECORDING, config));
     }
 
+    /**
+     * Tells the video recorder to stop recording.  (Call from non-encoder thread.)
+     * <p>
+     * Returns immediately; the encoder/muxer may not yet be finished creating the movie.
+     * <p>
+     * TODO: have the encoder thread invoke a callback on the UI thread just before it shuts down
+     * so we can provide reasonable status UI (and let the caller know that movie encoding
+     * has completed).
+     */
     public void stopRecording() {
         mHandler.sendMessage(mHandler.obtainMessage(MSG_STOP_RECORDING));
         mHandler.sendMessage(mHandler.obtainMessage(MSG_QUIT));
+        // We don't know when these will actually finish (or even start).  We don't want to
+        // delay the UI thread though, so we return immediately.
     }
 
     /**
@@ -120,20 +134,26 @@ public class TextureMovieHandler implements Runnable {
         mHandler.sendMessage(mHandler.obtainMessage(MSG_UPDATE_SHARED_CONTEXT, sharedContext));
     }
 
+    /**
+     * Tells the video recorder that a new frame is available.  (Call from non-encoder thread.)
+     */
     public void frameAvailable(SurfaceTexture st) {
         synchronized (mReadyFence) {
             if (!mReady) {
                 return;
             }
         }
-
         long timestamp = st.getTimestamp();
+        if (lastSurfaceTime == timestamp) return;
+
         if (timestamp == 0) {
+            // Seeing this after device is toggled off/on with power button.  The
+            // first frame back has a zero timestamp.
             Log.w(TAG, "HEY: got SurfaceTexture with timestamp of zero");
             return;
         }
-
-        mHandler.sendMessage(mHandler.obtainMessage(MSG_FRAME_AVAILABLE, (int) (timestamp >> 32), (int) timestamp));
+        lastSurfaceTime = timestamp;
+        mHandler.sendMessage(mHandler.obtainMessage(MSG_FRAME_AVAILABLE, (int) (timestamp >> 32), (int) (timestamp)));
     }
 
     /**
@@ -223,12 +243,11 @@ public class TextureMovieHandler implements Runnable {
      * @param timestampNanos The frame's timestamp, from SurfaceTexture.
      */
     private void handleFrameAvailable(long timestampNanos) {
-        if (movieRender != null) {
-            mVideoEncoder.drainEncoder(false);
-            movieRender.render();
-            mInputWindowSurface.setPresentationTime(timestampNanos);
-            mInputWindowSurface.swapBuffers();
-        }
+        if (VERBOSE) Log.d(TAG, "handleFrameAvailable timestampNanos=" + timestampNanos);
+        mVideoEncoder.drainEncoder(false);
+        if (movieRender != null) movieRender.render();
+        mInputWindowSurface.setPresentationTime(timestampNanos);
+        mInputWindowSurface.swapBuffers();
     }
 
     /**
@@ -240,23 +259,22 @@ public class TextureMovieHandler implements Runnable {
         releaseEncoder();
     }
 
-
     /**
      * Tears down the EGL surface and context we've been using to feed the MediaCodec input
      * surface, and replaces it with a new one that shares with the new context.
-     * <p>
-     * This is useful if the old context we were sharing with went away (maybe a GLSurfaceView
-     * that got torn down) and we need to hook up with the new one.
      */
     private void handleUpdateSharedContext(EGLContext newSharedContext) {
         Log.d(TAG, "handleUpdatedSharedContext " + newSharedContext);
 
+        // Release the EGLSurface and EGLContext.
         mInputWindowSurface.releaseEglSurface();
         mEglCore.release();
 
+        // Create a new EGLContext and recreate the window surface.
         mEglCore = new EglCore(newSharedContext, EglCore.FLAG_RECORDABLE);
         mInputWindowSurface.recreate(mEglCore);
         mInputWindowSurface.makeCurrent();
+
     }
 
     private void prepareEncoder(EGLContext sharedContext, int width, int height, int bitRate,
@@ -271,6 +289,7 @@ public class TextureMovieHandler implements Runnable {
         mEglCore = new EglCore(sharedContext, EglCore.FLAG_RECORDABLE);
         mInputWindowSurface = new WindowSurface(mEglCore, mVideoEncoder.getInputSurface(), true);
         mInputWindowSurface.makeCurrent();
+
     }
 
     private void releaseEncoder() {
@@ -278,6 +297,10 @@ public class TextureMovieHandler implements Runnable {
         if (mInputWindowSurface != null) {
             mInputWindowSurface.release();
             mInputWindowSurface = null;
+        }
+        if (mEglCore != null) {
+            mEglCore.release();
+            mEglCore = null;
         }
     }
 
