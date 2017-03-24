@@ -5,6 +5,7 @@ import android.animation.Animator;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -38,6 +39,7 @@ import com.lq.beauty.R;
 import com.lq.beauty.app.camera.CameraEngine;
 import com.lq.beauty.app.camera.render.CameraRender;
 import com.lq.beauty.app.main.widget.RecordButton;
+import com.lq.beauty.app.videoList.VideoListActivity;
 import com.lq.beauty.base.activity.BaseActivity;
 import com.lq.beauty.base.opengl.WGLSurfaceView;
 import com.mikepenz.iconics.context.IconicsContextWrapper;
@@ -72,10 +74,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @BindView(R.id.mainBtnRecord)
     protected RecordButton mBtnRecord;
 
-    @OnClick(R.id.mainBtnRecord) void onClicked() {
+    @OnClick(R.id.mainBtnRecord) void onRecordClicked() {
         mBtnRecord.animateCheckedState();
         isRecording = !isRecording;
         cameraRender.changeRecordingState(isRecording);
+    }
+
+    @OnClick(R.id.mainBtnHistory) void onHistoryClicked() {
+        Intent intent = new Intent(MainActivity.this, VideoListActivity.class);
+        MainActivity.this.startActivity(intent);
     }
 
     protected boolean isRecording;

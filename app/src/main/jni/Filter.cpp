@@ -63,7 +63,7 @@ namespace dream {
     , _frameWidth(0)
     , _cameraWidth(0)
     , _cameraHeight(0)
-    , _cameraScaleType(ScaleType::CenterInside){
+    , _cameraScaleType(ScaleType::CenterCrop){
 
     }
 
@@ -106,10 +106,10 @@ namespace dream {
             float ratio = ratioW > ratioH ? ratioH : ratioW;
             ratioW = _cameraWidth * ratio / _frameWidth;
             ratioH = _cameraHeight * ratio / _frameHeight;
-            _vexPosition[0] = _vexPosition[4] = _vexPosition[0] * ratioH;
-            _vexPosition[2] = _vexPosition[6] = _vexPosition[2] * ratioH;
-            _vexPosition[1] = _vexPosition[3] = _vexPosition[1] * ratioW;
-            _vexPosition[5] = _vexPosition[7] = _vexPosition[5] * ratioW;
+            _vexPosition[0] = _vexPosition[4] = _vexPosition[0] * ratioW;
+            _vexPosition[2] = _vexPosition[6] = _vexPosition[2] * ratioW;
+            _vexPosition[1] = _vexPosition[3] = _vexPosition[1] * ratioH;
+            _vexPosition[5] = _vexPosition[7] = _vexPosition[5] * ratioH;
 
         } else if (_cameraScaleType == ScaleType::CenterCrop) {
             float ratioW = _frameWidth * 1.f / _cameraWidth;

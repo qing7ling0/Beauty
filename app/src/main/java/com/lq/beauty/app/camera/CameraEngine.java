@@ -110,7 +110,8 @@ public class CameraEngine {
         parameters.setPreviewSize(previewSize.width, previewSize.height);
         Size pictureSize = getCeilPictureSize(camera, screenPreviewWidth, screenPreviewHeight);
         parameters.setPictureSize(pictureSize.width, pictureSize.height);
-        parameters.setRotation(90);
+        parameters.setRotation(180);
+        camera.setDisplayOrientation(180);
         camera.setParameters(parameters);
     }
 
