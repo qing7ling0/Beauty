@@ -90,7 +90,7 @@ public class WGLSurfaceView extends GLSurfaceView {
     @Override
     protected void onSizeChanged(final int pNewSurfaceWidth, final int pNewSurfaceHeight, final int pOldSurfaceWidth, final int pOldSurfaceHeight) {
         if(!this.isInEditMode()) {
-            this.mWRenderer.setScreenWidthAndHeight(pNewSurfaceWidth, pNewSurfaceHeight);
+            this.mWRenderer.setRenderWidthAndHeight(pNewSurfaceWidth, pNewSurfaceHeight);
         }
     }
 

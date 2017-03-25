@@ -15,8 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
-import java.util.ArrayList;
-
 
 /**
  * Encode a movie from frames rendered from an external texture image.
@@ -59,21 +57,30 @@ public class TextureMovieHandler implements Runnable {
         final File mOutputFile;
         final int mWidth;
         final int mHeight;
-        final int mBitRate;
         final EGLContext mEglContext;
+        VideoParams mVideoParams;
 
-        public EncoderConfig(File outputFile, int width, int height, int bitRate,
+        public EncoderConfig(File outputFile, int width, int height, EGLContext sharedEglContext, WCameraInfo info) {
+            mOutputFile = outputFile;
+            mWidth = width;
+            mHeight = height;
+            mEglContext = sharedEglContext;
+            mVideoParams = new VideoParams();
+        }
+
+        public EncoderConfig(File outputFile, int width, int height, VideoParams params,
                              EGLContext sharedEglContext, WCameraInfo info) {
             mOutputFile = outputFile;
             mWidth = width;
             mHeight = height;
-            mBitRate = bitRate;
             mEglContext = sharedEglContext;
+            mVideoParams = params;
         }
+
 
         @Override
         public String toString() {
-            return "EncoderConfig: " + mWidth + "x" + mHeight + " @" + mBitRate +
+            return "EncoderConfig: " + mWidth + "x" + mHeight + " @" + mVideoParams +
                     " to '" + mOutputFile.toString() + "' ctxt=" + mEglContext;
         }
     }
@@ -230,7 +237,7 @@ public class TextureMovieHandler implements Runnable {
      */
     private void handleStartRecording(EncoderConfig config) {
         Log.d(TAG, "handleStartRecording " + config);
-        prepareEncoder(config.mEglContext, config.mWidth, config.mHeight, config.mBitRate,
+        prepareEncoder(config.mEglContext, config.mWidth, config.mHeight, config.mVideoParams,
                 config.mOutputFile);
     }
 
@@ -277,10 +284,10 @@ public class TextureMovieHandler implements Runnable {
 
     }
 
-    private void prepareEncoder(EGLContext sharedContext, int width, int height, int bitRate,
+    private void prepareEncoder(EGLContext sharedContext, int width, int height, VideoParams params,
                                 File outputFile) {
         try {
-            mVideoEncoder = new VideoEncoderCore(width, height, bitRate, outputFile);
+            mVideoEncoder = new VideoEncoderCore(width, height, params, outputFile);
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }

@@ -1,21 +1,18 @@
 package com.lq.beauty.app.camera.render;
 
 import android.graphics.SurfaceTexture;
-import android.hardware.Camera;
 import android.opengl.EGL14;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.util.Log;
 
 import com.lq.beauty.app.camera.CameraEngine;
+import com.lq.beauty.app.camera.CameraHelper;
 import com.lq.beauty.app.camera.WCameraInfo;
 import com.lq.beauty.app.camera.video.TextureMovieHandler;
-import com.lq.beauty.app.widget.MagicParams;
 import com.lq.beauty.base.opengl.WRendererBase;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -34,7 +31,6 @@ public class CameraRender extends WRendererBase implements SurfaceTexture.OnFram
     private int surfaceTextureID = -1;
     private boolean recordingEnabled;
     private int recordingStatus;
-    private File outputFile;
 
     private static TextureMovieHandler videoHandler = new TextureMovieHandler();
 
@@ -43,7 +39,6 @@ public class CameraRender extends WRendererBase implements SurfaceTexture.OnFram
         recordingStatus = -1;
         recordingEnabled = false;
         videoHandler.setMovieRender(this);
-        outputFile = new File(MagicParams.videoPath, MagicParams.videoName);
     }
 
     @Override
@@ -80,10 +75,10 @@ public class CameraRender extends WRendererBase implements SurfaceTexture.OnFram
         if (CameraEngine.getCamera() != null) {
             WCameraInfo info = CameraEngine.getCameraInfo();
             int w = info.previewWidth;
-            int h = info.pictureHeight;
+            int h = info.previewHeight;
             if (info.orientation == 90 || info.orientation == 270) {
-                w = info.pictureHeight;
-                h = info.pictureWidth;
+                w = info.previewHeight;
+                h = info.previewWidth;
             }
             nativeSetCameraSize(w, h);
         }
@@ -104,10 +99,9 @@ public class CameraRender extends WRendererBase implements SurfaceTexture.OnFram
                         videoHandler.setPreviewSize(info.previewWidth, info.pictureHeight);
                         videoHandler.startRecording(
                                 new TextureMovieHandler.EncoderConfig(
-                                        outputFile,
-                                        info.previewWidth,
-                                        info.pictureHeight,
-                                        1000000,
+                                        new File(CameraHelper.createVideoFilePath()),
+                                        renderWidth,
+                                        renderHeight,
                                         EGL14.eglGetCurrentContext(),
                                         info));
                         recordingStatus = RECORDING_ON;
