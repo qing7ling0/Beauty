@@ -5,10 +5,12 @@
     <color name="colorAccent">#cc3399</color>
     <color name="white">#FFFFFF</color>
     <color name="red">#FF0000</color>
+    <color name="black">#000000</color>
     <color name="colorMain">#cc3399</color>
     <color name="colorBg">#cc3399</color>
     <color name="colorBgActive">#cc8899</color>
     <color name="colorTitle">#FFFFFF</color>
     <color name="colorBtnBg1">#22000000</color>
     <color name="transparent">#00000000</color>
+    <color name="blackAlpha64">#40000000</color>
 </resources>

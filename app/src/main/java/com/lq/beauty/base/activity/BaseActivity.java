@@ -10,8 +10,7 @@ import butterknife.ButterKnife;
 
 
 /**
- * Created by wuqingqing
- * on 17/3/5.
+ * Created by wuqingqing on 17/3/5.
  */
 
 public abstract class BaseActivity extends AppCompatActivity {

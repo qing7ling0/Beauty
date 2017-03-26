@@ -36,6 +36,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.lq.beauty.R;
+import com.lq.beauty.app.base.BaseBeautyActivity;
 import com.lq.beauty.app.camera.CameraEngine;
 import com.lq.beauty.app.camera.render.CameraRender;
 import com.lq.beauty.app.main.widget.RecordButton;
@@ -48,7 +49,7 @@ import com.mikepenz.iconics.view.IconicsButton;
 
 import butterknife.*;
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseBeautyActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     @BindView(R.id.toolbar)
     protected Toolbar mToolbar;
@@ -98,14 +99,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     protected void initWidget() {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Window window = getWindow();
-            // Translucent status bar
-            window.setFlags(
-                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        }
+        super.initWidget();
 
         mToolbar.setTitle("Hello");
         setSupportActionBar(mToolbar);

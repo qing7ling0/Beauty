@@ -121,6 +121,15 @@ public class StringUtils {
         }
     }
 
+    public static String getDateString(SimpleDateFormat format, String sdate) {
+        if (TextUtils.isEmpty(sdate)) return "";
+        try {
+            return format.format(toDate(sdate));
+        } catch (Exception e) {
+            return sdate;
+        }
+    }
+
     public static String formatYearMonthDay(String st) {
         if (TextUtils.isEmpty(st)) return "";
         Matcher matcher = UniversalDatePattern.matcher(st);

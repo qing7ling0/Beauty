@@ -7,6 +7,7 @@ import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -250,17 +251,36 @@ public class FileUtil {
      * @param dir
      * @return
      */
-    public long getFileList(File dir) {
+    public long getFileListCount(File dir) {
+        if (dir.isDirectory()) return 0;
+
         long count = 0;
         File[] files = dir.listFiles();
         count = files.length;
         for (File file : files) {
             if (file.isDirectory()) {
-                count = count + getFileList(file);// 递归
+                count = count + getFileListCount(file);// 递归
                 count--;
             }
         }
         return count;
+    }
+
+    public static void getFileList(List<String> list, File dir, FileFilter fileFilter) {
+        if (dir.isDirectory()) {
+            if (fileFilter != null) {
+                File[] temp = dir.listFiles(fileFilter);
+                for(File file : temp) {
+                    if (file.isDirectory()) {
+                        getFileList(list, file, fileFilter);
+                    } else {
+                        list.add(file.getAbsolutePath());
+                    }
+                }
+            }
+        } else {
+            return;
+        }
     }
 
     public static byte[] toBytes(InputStream in) throws IOException {
