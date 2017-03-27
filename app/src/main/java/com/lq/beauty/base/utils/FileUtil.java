@@ -266,16 +266,14 @@ public class FileUtil {
         return count;
     }
 
-    public static void getFileList(List<String> list, File dir, FileFilter fileFilter) {
+    public static void getFileList(List<String> list, File dir) {
         if (dir.isDirectory()) {
-            if (fileFilter != null) {
-                File[] temp = dir.listFiles(fileFilter);
-                for(File file : temp) {
-                    if (file.isDirectory()) {
-                        getFileList(list, file, fileFilter);
-                    } else {
-                        list.add(file.getAbsolutePath());
-                    }
+            File[] temp = dir.listFiles();
+            for(File file : temp) {
+                if (file.isDirectory()) {
+                    getFileList(list, file);
+                } else {
+                    list.add(file.getAbsolutePath());
                 }
             }
         } else {
