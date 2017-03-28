@@ -2,11 +2,16 @@ package com.lq.beauty.app.videoList.data;
 
 import android.graphics.Bitmap;
 
+import com.lq.beauty.base.cache.CacheItem;
+
+import java.io.Serializable;
+
 /**
  * Created by Administrator on 2017/3/25.
  */
 
-public class VideoListItemData {
+public class VideoListItemData implements Serializable {
+    private boolean isMy;
     private String name;
     private String videoPath;
     private Bitmap bitmap;
@@ -42,5 +47,13 @@ public class VideoListItemData {
 
     public void setBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;
+    }
+
+    public boolean isMy() {
+        return isMy;
+    }
+
+    public void setMy(boolean my) {
+        isMy = my;
     }
 }

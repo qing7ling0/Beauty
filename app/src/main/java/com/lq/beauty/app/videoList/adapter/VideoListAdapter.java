@@ -56,6 +56,7 @@ public class VideoListAdapter extends BaseRecyclerAdapter<VideoListItemData> {
 
         public void setVideoPath(String path) {
             path = "file://" + path;
+//            path = "http://img0.imgtn.bdimg.com/it/u=790765524,1350374988&fm=23&gp=0.jpg";
             Uri uri = (path != null) ? Uri.parse(path) : null;
             ImageRequest request = ImageRequestBuilder
                     .newBuilderWithSource(uri)

@@ -31,20 +31,17 @@ import com.lq.beauty.base.adapter.BaseRecyclerAdapter;
 import com.lq.beauty.base.utils.FileUtil;
 import com.lq.beauty.base.utils.ImageUtils;
 import com.lq.beauty.base.utils.StringUtils;
+import com.lq.beauty.base.utils.UIHelper;
+import com.lq.beauty.base.widget.BaseRecyclerView;
 import com.mikepenz.iconics.context.IconicsLayoutInflater;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.concurrent.Callable;
 
 import butterknife.BindView;
 import io.reactivex.Emitter;
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
@@ -52,13 +49,16 @@ import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
-public class VideoListActivity extends BaseBackBeautyActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class VideoListActivity extends BaseBackBeautyActivity {
 
     @BindView(R.id.rvVideoList)
-    protected RecyclerView rvVideoList;
+    protected BaseRecyclerView rvVideoList;
 
     @BindView(R.id.rvMyVideoList)
-    protected RecyclerView rvMyVideoList;
+    protected BaseRecyclerView rvMyVideoList;
+
+    @BindView(R.id.nsvScrollView)
+    protected NestedScrollView nsvScrollView;
 
     private VideoListAdapter videoListAdapter;
     private VideoListAdapter videoMyListAdapter;
@@ -78,11 +78,12 @@ public class VideoListActivity extends BaseBackBeautyActivity implements Navigat
         super.initWidget();
         setTitle(R.string.video);
         Fresco.initialize(this);
+
         videoListAdapter = new VideoListAdapter(this);
         videoListAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position, long itemId) {
-
+                onVideoItemClicked(videoListAdapter.getItem(position));
             }
         });
         rvVideoList.setLayoutManager(new GridLayoutManager(this, 3));
@@ -92,17 +93,10 @@ public class VideoListActivity extends BaseBackBeautyActivity implements Navigat
         videoMyListAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position, long itemId) {
-                int i= position;
-                int j = i + 1;
+                onVideoItemClicked(videoMyListAdapter.getItem(position));
             }
         });
-        GridLayoutManager glm = new GridLayoutManager(this, 3);
-        glm.setAutoMeasureEnabled(true);
-        glm.setSmoothScrollbarEnabled(true);
-        rvMyVideoList.setLayoutManager(glm);
-//        rvMyVideoList.setLayoutManager(new FullyLinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
-//        rvMyVideoList.setHasFixedSize(true);
-        rvMyVideoList.setNestedScrollingEnabled(false);
+        rvMyVideoList.setLayoutManager(new GridLayoutManager(this, 3));
         rvMyVideoList.setAdapter(videoMyListAdapter);
     }
 
@@ -110,6 +104,20 @@ public class VideoListActivity extends BaseBackBeautyActivity implements Navigat
     protected void initData() {
         initVideoListAdapterData();
 
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        int height = nsvScrollView.getMeasuredHeight();
+        rvVideoList.setMaxHeight(height);
+        rvMyVideoList.setMaxHeight(height);
+    }
+
+    private void onVideoItemClicked(VideoListItemData item) {
+
+        int i = 1;
+        int j = i + 1;
     }
 
     private void initVideoListAdapterData() {
@@ -176,7 +184,7 @@ public class VideoListActivity extends BaseBackBeautyActivity implements Navigat
                             if (VideoListConfig.checkVideoMy(videoListItemData.getVideoPath())) {
                                 videoMyListAdapter.addItem(videoListItemData);
                             } else {
-                                videoMyListAdapter.addItem(videoListItemData);
+                                videoListAdapter.addItem(videoListItemData);
                             }
                         }
                     }
@@ -211,127 +219,4 @@ public class VideoListActivity extends BaseBackBeautyActivity implements Navigat
         }
     }
 
-    @Override
-    public void onBackPressed() {
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        return true;
-    }
-
-    class FullyLinearLayoutManager extends LinearLayoutManager {
-
-        private final String TAG = FullyLinearLayoutManager.class.getSimpleName();
-
-        public FullyLinearLayoutManager(Context context) {
-            super(context);
-        }
-
-        public FullyLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {
-            super(context, orientation, reverseLayout);
-        }
-
-        private int[] mMeasuredDimension = new int[2];
-
-        @Override
-        public void onMeasure(RecyclerView.Recycler recycler, RecyclerView.State state,
-                              int widthSpec, int heightSpec) {
-
-            final int widthMode = View.MeasureSpec.getMode(widthSpec);
-            final int heightMode = View.MeasureSpec.getMode(heightSpec);
-            final int widthSize = View.MeasureSpec.getSize(widthSpec);
-            final int heightSize = View.MeasureSpec.getSize(heightSpec);
-
-            Log.i(TAG, "onMeasure called. \nwidthMode " + widthMode
-                    + " \nheightMode " + heightSpec
-                    + " \nwidthSize " + widthSize
-                    + " \nheightSize " + heightSize
-                    + " \ngetItemCount() " + getItemCount());
-
-            int width = 0;
-            int height = 0;
-            for (int i = 0; i < getItemCount(); i++) {
-                measureScrapChild(recycler, i,
-                        View.MeasureSpec.makeMeasureSpec(i, View.MeasureSpec.UNSPECIFIED),
-                        View.MeasureSpec.makeMeasureSpec(i, View.MeasureSpec.UNSPECIFIED),
-                        mMeasuredDimension);
-
-                if (getOrientation() == HORIZONTAL) {
-                    width = width + mMeasuredDimension[0];
-                    if (i == 0) {
-                        height = mMeasuredDimension[1];
-                    }
-                } else {
-                    height = height + mMeasuredDimension[1];
-                    if (i == 0) {
-                        width = mMeasuredDimension[0];
-                    }
-                }
-            }
-            switch (widthMode) {
-                case View.MeasureSpec.EXACTLY:
-                    width = widthSize;
-                case View.MeasureSpec.AT_MOST:
-                case View.MeasureSpec.UNSPECIFIED:
-            }
-
-            switch (heightMode) {
-                case View.MeasureSpec.EXACTLY:
-                    height = heightSize;
-                case View.MeasureSpec.AT_MOST:
-                case View.MeasureSpec.UNSPECIFIED:
-            }
-
-            setMeasuredDimension(width, height);
-        }
-
-        private void measureScrapChild(RecyclerView.Recycler recycler, int position, int widthSpec,
-                                       int heightSpec, int[] measuredDimension) {
-            try {
-                View view = recycler.getViewForPosition(0);//fix 动态添加时报IndexOutOfBoundsException
-
-                if (view != null) {
-                    RecyclerView.LayoutParams p = (RecyclerView.LayoutParams) view.getLayoutParams();
-
-                    int childWidthSpec = ViewGroup.getChildMeasureSpec(widthSpec,
-                            getPaddingLeft() + getPaddingRight(), p.width);
-
-                    int childHeightSpec = ViewGroup.getChildMeasureSpec(heightSpec,
-                            getPaddingTop() + getPaddingBottom(), p.height);
-
-                    view.measure(childWidthSpec, childHeightSpec);
-                    measuredDimension[0] = view.getMeasuredWidth() + p.leftMargin + p.rightMargin;
-                    measuredDimension[1] = view.getMeasuredHeight() + p.bottomMargin + p.topMargin;
-                    recycler.recycleView(view);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-            }
-        }
-    }
 }

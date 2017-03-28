@@ -2,6 +2,7 @@ package com.lq.beauty.base.widget;
 
 import android.content.Context;
 import android.support.v4.view.NestedScrollingParent;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -43,11 +44,14 @@ public class NestedParent extends NestedScrollView {
                 downY = (int) e.getRawY();
                 break;
             case MotionEvent.ACTION_MOVE:
-                int moveY = (int) e.getRawY();
-                if (Math.abs(moveY - downY) > mTouchSlop) {
-                    return true;
-                }
+//                int moveY = (int) e.getRawY();
+//                if (Math.abs(moveY - downY) > mTouchSlop) {
+//                    return true;
+//                }
+                break;
         }
         return super.onInterceptTouchEvent(e);
     }
+
+
 }

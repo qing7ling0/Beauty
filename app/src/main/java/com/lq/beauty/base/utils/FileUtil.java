@@ -357,14 +357,9 @@ public class FileUtil {
      *
      * @return
      */
-    public static boolean checkSaveLocationExists() {
-        String sDCardStatus = Environment.getExternalStorageState();
-        boolean status;
-        if (sDCardStatus.equals(Environment.MEDIA_MOUNTED)) {
-            status = true;
-        } else
-            status = false;
-        return status;
+    public static boolean checkSdcardMounted() {
+        final String state = Environment.getExternalStorageState();
+        return state.equals(Environment.MEDIA_MOUNTED) && !state.equals(Environment.MEDIA_MOUNTED_READ_ONLY);
     }
 
     /**

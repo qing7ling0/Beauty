@@ -14,13 +14,14 @@
         <include
             layout="@layout/lay_back_header"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"/>
     </android.support.design.widget.AppBarLayout>
 
-    <ScrollView
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/nsvScrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -31,12 +32,13 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_scrollFlags="scroll|enterAlways"
-                android:text="我的拍摄"/>
-            <android.support.v7.widget.RecyclerView
+                android:padding="5px"
+                android:layout_marginLeft="10dp"
+                android:text="@string/myVideo"/>
+            <com.lq.beauty.base.widget.BaseRecyclerView
                 android:id="@+id/rvMyVideoList"
                 android:layout_width="match_parent"
-                android:layout_height="600dp"
+                android:layout_height="match_parent"
                 android:minHeight="100dp"
                 android:nestedScrollingEnabled="false"
                 android:padding="5px" />
@@ -44,14 +46,17 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="视频"/>
-            <android.support.v7.widget.RecyclerView
+                android:padding="5px"
+                android:layout_marginLeft="10dp"
+                android:text="@string/video"/>
+            <com.lq.beauty.base.widget.BaseRecyclerView
                 android:id="@+id/rvVideoList"
                 android:layout_width="match_parent"
-                android:layout_height="600dp"
+                android:layout_height="match_parent"
+                android:minHeight="100dp"
                 android:nestedScrollingEnabled="false"
                 android:padding="5px" />
         </LinearLayout>
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
 </android.support.design.widget.CoordinatorLayout>
