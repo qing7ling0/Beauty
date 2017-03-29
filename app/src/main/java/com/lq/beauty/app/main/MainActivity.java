@@ -1,21 +1,9 @@
 package com.lq.beauty.app.main;
 
 import android.Manifest;
-import android.animation.Animator;
-import android.animation.AnimatorInflater;
-import android.animation.AnimatorSet;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.RippleDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.Shape;
-import android.os.Build;
-import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.PermissionChecker;
 import android.support.v4.view.LayoutInflaterCompat;
@@ -27,23 +15,16 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
-import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.lq.beauty.R;
 import com.lq.beauty.app.base.BaseBeautyActivity;
-import com.lq.beauty.app.camera.CameraEngine;
 import com.lq.beauty.app.camera.render.CameraRender;
 import com.lq.beauty.app.main.widget.RecordButton;
 import com.lq.beauty.app.videoList.VideoListActivity;
-import com.lq.beauty.base.activity.BaseActivity;
+import com.lq.beauty.base.cache.CacheManager;
 import com.lq.beauty.base.opengl.WGLSurfaceView;
-import com.mikepenz.iconics.context.IconicsContextWrapper;
+import com.lq.beauty.base.widget.BaseRecyclerView;
 import com.mikepenz.iconics.context.IconicsLayoutInflater;
 import com.mikepenz.iconics.view.IconicsButton;
 
@@ -88,6 +69,7 @@ public class MainActivity extends BaseBeautyActivity implements NavigationView.O
 
     protected boolean isRecording;
     protected CameraRender cameraRender;
+    protected MainMenu mainMenu;
 
     @Override
     protected int getContentView() { return R.layout.act_main; }
@@ -131,35 +113,22 @@ public class MainActivity extends BaseBeautyActivity implements NavigationView.O
         });
         toggle.syncState();
 
-        mNavigationView.setNavigationItemSelectedListener(this);
-
         if (PermissionChecker.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[] { Manifest.permission.CAMERA }, 1);
         }
         cameraRender = new CameraRender();
         mWGLSurfaceView.setWRenderer(cameraRender);
 
-//        RippleDrawable rd = (RippleDrawable) mBtnRecord.getBackground();
-//
-//
-//        ShapeDrawable shap = (ShapeDrawable) rd.getDrawable(0);
-//
-//        AnimatorSet animation = (AnimatorSet) AnimatorInflater.loadAnimator(
-//                MainActivity.this, R.anim.ani_main_btn_record);
-//        // 启动动画
-//        animation.setTarget(shap);
-//        animation.start();
+        mainMenu = new MainMenu(this, (BaseRecyclerView) findViewById(R.id.brvMenuList));
+        mainMenu.initWidget();
     }
 
     @Override
     protected void initData() {
         isRecording = false;
+        CacheManager.getInstance().initCacheDir();
+        mainMenu.initData();
     }
-
-//    @Override
-//    protected void attachBaseContext(Context newBase) {
-//        super.attachBaseContext(IconicsContextWrapper.wrap(newBase));
-//    }
 
     @Override
     public void onBackPressed() {
@@ -179,9 +148,6 @@ public class MainActivity extends BaseBeautyActivity implements NavigationView.O
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement

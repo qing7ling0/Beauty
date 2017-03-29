@@ -173,8 +173,12 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter {
         else return VIEW_TYPE_NORMAL;
     }
 
-    protected int getIndex(int position) {
+    public int getIndex(int position) {
         return BEHAVIOR_MODE == ONLY_HEADER || BEHAVIOR_MODE == BOTH_HEADER_FOOTER ? position - 1 : position;
+    }
+
+    public int getPosition(int index) {
+        return BEHAVIOR_MODE == ONLY_HEADER || BEHAVIOR_MODE == BOTH_HEADER_FOOTER ? index + 1 : index;
     }
 
     @Override

@@ -318,7 +318,8 @@ public class FileUtil {
     /**
      * 计算SD卡的剩余空间
      *
-     * @return 返回-1，说明没有安装sd卡
+     *
+     * @return 返回-1，说明没有安装sd卡bytes
      */
     public static long getFreeDiskSpace() {
         String status = Environment.getExternalStorageState();
@@ -329,7 +330,7 @@ public class FileUtil {
                 StatFs stat = new StatFs(path.getPath());
                 long blockSize = stat.getBlockSize();
                 long availableBlocks = stat.getAvailableBlocks();
-                freeSpace = availableBlocks * blockSize / 1024;
+                freeSpace = availableBlocks * blockSize;
             } catch (Exception e) {
                 e.printStackTrace();
             }

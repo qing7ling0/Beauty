@@ -22,6 +22,7 @@ public class BaseRecyclerView extends RecyclerView {
     private LayoutManager mLayout;
     private int mTouchSlop;
     private int mMaxHeight;
+    private boolean mFosucInterceptTouchEvent;
 
     public BaseRecyclerView(Context context) {
         super(context);
@@ -41,19 +42,30 @@ public class BaseRecyclerView extends RecyclerView {
     public void setLayoutManager(LayoutManager layout) {
         super.setLayoutManager(layout);
         mLayout = layout;
-
     }
 
     public void setMaxHeight(int height) {
         mMaxHeight = height;
-        requestLayout();
+        if (mMaxHeight > 0) {
+            int _h = getMeasuredHeight();
+            _h = _h > mMaxHeight ? mMaxHeight : _h;
+            ViewTransform.setViewHeight(this, _h);
+        }
+    }
+
+    public boolean isFosucInterceptTouchEvent() {
+        return mFosucInterceptTouchEvent;
+    }
+
+    public void setFosucInterceptTouchEvent(boolean fosucInterceptTouchEvent) {
+        this.mFosucInterceptTouchEvent = fosucInterceptTouchEvent;
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        int _h = h;
         if (mMaxHeight > 0) {
+            int _h = h;
             _h = _h > mMaxHeight ? mMaxHeight : _h;
             ViewTransform.setViewHeight(this, _h);
         }
@@ -63,7 +75,7 @@ public class BaseRecyclerView extends RecyclerView {
     public boolean onInterceptTouchEvent(MotionEvent e) {
         final int action = MotionEventCompat.getActionMasked(e);
         final int actionIndex = MotionEventCompat.getActionIndex(e);
-
+        boolean intercept = false;
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 mScrollPointerId = e.getPointerId(0);
@@ -76,14 +88,16 @@ public class BaseRecyclerView extends RecyclerView {
                 int dy = y - mLastTouchY;
                 if (mLayout.canScrollVertically()) {
                     if ((dy < 0 && ViewCompat.canScrollVertically(this, 1)) || (dy > 0 && ViewCompat.canScrollVertically(this, -1))) {
-                        final ViewParent p = getParent();
-                        if (null != p)
-                            p.requestDisallowInterceptTouchEvent(true);
+                        intercept = true;
                     }
                 }
                 break;
         }
-
-        return super.onInterceptTouchEvent(e);
+        if (mFosucInterceptTouchEvent || intercept) {
+            final ViewParent p = getParent();
+            if (null != p)
+                p.requestDisallowInterceptTouchEvent(true);
+        }
+        return super.onInterceptTouchEvent(e) || mFosucInterceptTouchEvent;
     }
 }

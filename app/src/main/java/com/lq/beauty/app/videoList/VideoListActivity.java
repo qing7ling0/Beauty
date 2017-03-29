@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v4.widget.NestedScrollView;
@@ -27,7 +28,9 @@ import com.lq.beauty.app.base.BaseBackBeautyActivity;
 import com.lq.beauty.app.base.BaseBeautyActivity;
 import com.lq.beauty.app.videoList.adapter.VideoListAdapter;
 import com.lq.beauty.app.videoList.data.VideoListItemData;
+import com.lq.beauty.app.videoList.data.VideoListItems;
 import com.lq.beauty.base.adapter.BaseRecyclerAdapter;
+import com.lq.beauty.base.cache.CacheManager;
 import com.lq.beauty.base.utils.FileUtil;
 import com.lq.beauty.base.utils.ImageUtils;
 import com.lq.beauty.base.utils.StringUtils;
@@ -36,17 +39,28 @@ import com.lq.beauty.base.widget.BaseRecyclerView;
 import com.mikepenz.iconics.context.IconicsLayoutInflater;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import butterknife.BindView;
 import io.reactivex.Emitter;
 import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.schedulers.Schedulers;
 
 public class VideoListActivity extends BaseBackBeautyActivity {
@@ -103,7 +117,6 @@ public class VideoListActivity extends BaseBackBeautyActivity {
     @Override
     protected void initData() {
         initVideoListAdapterData();
-
     }
 
     @Override
@@ -120,7 +133,48 @@ public class VideoListActivity extends BaseBackBeautyActivity {
         int j = i + 1;
     }
 
+    /**
+     * 获取更新的索引
+     *
+     * @param data
+     * @return >0有更新，-1:无修改无添加，-2:有添加
+     */
+    private int getUpdateVideoItemIndex(VideoListItemData data) {
+        if (data == null) return -2;
+        List<VideoListItemData> cacheList = data.isMy() ? videoMyListAdapter.getItems() : videoListAdapter.getItems();
+        int index = 0;
+        for (VideoListItemData item : cacheList) {
+            if(TextUtils.equals(data.getVideoPath(), item.getVideoPath())) {
+                if (!data.equals(item)) {
+                    return index;
+                }
+                return -1;
+            }
+            index++;
+        }
+
+        return -2;
+    }
+
     private void initVideoListAdapterData() {
+        Object data = CacheManager.getInstance().getCache(VideoListItems.KEY);
+        if (null != data) {
+            List<VideoListItemData> cacheList = (List<VideoListItemData>) data;
+            Map<String, String> cacheKeys = new HashMap<String, String>();
+            for(VideoListItemData item : cacheList) {
+                if (FileUtil.checkFileExists(item.getVideoPath()) && !cacheKeys.containsKey(item.getVideoPath())) {
+                    cacheKeys.put(item.getVideoPath(), item.getVideoPath());
+                    if (item.isMy()) {
+                        videoMyListAdapter.addItem(item);
+                    } else {
+                        videoListAdapter.addItem(item);
+                    }
+                }
+            }
+        } else {
+            List<VideoListItemData> cacheList = new ArrayList<>();
+        }
+
         disposables.add(videoListObservable()
                 .filter(new Predicate<String>() {
                     @Override
@@ -171,7 +225,6 @@ public class VideoListActivity extends BaseBackBeautyActivity {
                             data.setVideoPath("");
                         }
                         mmr.release();
-//                        SystemClock.sleep(100);
                         return data;
                     }
                 })
@@ -181,12 +234,25 @@ public class VideoListActivity extends BaseBackBeautyActivity {
                     @Override
                     public void accept(VideoListItemData videoListItemData) throws Exception {
                         if (videoListItemData != null && !TextUtils.isEmpty(videoListItemData.getVideoPath())) {
-                            if (VideoListConfig.checkVideoMy(videoListItemData.getVideoPath())) {
-                                videoMyListAdapter.addItem(videoListItemData);
-                            } else {
-                                videoListAdapter.addItem(videoListItemData);
+                            videoListItemData.setMy(VideoListConfig.checkVideoMy(videoListItemData.getVideoPath()));
+                            VideoListAdapter adapter = videoListItemData.isMy() ? videoMyListAdapter : videoListAdapter;
+
+                            int index = getUpdateVideoItemIndex(videoListItemData);
+                            if (index == -2) {
+                                adapter.addItem(videoListItemData);
+                            } else if (index > -1) {
+                                adapter.replaceItem(videoMyListAdapter.getPosition(index), videoListItemData);
                             }
                         }
+                    }
+                }, Functions.ERROR_CONSUMER,
+                new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        List<VideoListItemData> list = new ArrayList<VideoListItemData>();
+                        list.addAll(videoListAdapter.getItems());
+                        list.addAll(videoMyListAdapter.getItems());
+                        VideoListItems.cache(list);
                     }
                 }));
     }

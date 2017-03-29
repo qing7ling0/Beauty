@@ -1,6 +1,7 @@
 package com.lq.beauty.app.videoList.data;
 
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 
 import com.lq.beauty.base.cache.CacheItem;
 
@@ -14,7 +15,6 @@ public class VideoListItemData implements Serializable {
     private boolean isMy;
     private String name;
     private String videoPath;
-    private Bitmap bitmap;
     private String time;
 
     public String getName() {
@@ -41,19 +41,38 @@ public class VideoListItemData implements Serializable {
         this.time = time;
     }
 
-    public Bitmap getBitmap() {
-        return bitmap;
-    }
-
-    public void setBitmap(Bitmap bitmap) {
-        this.bitmap = bitmap;
-    }
-
     public boolean isMy() {
         return isMy;
     }
 
     public void setMy(boolean my) {
         isMy = my;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 15;
+        int result = 1;
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((time == null) ? 0 : time.hashCode());
+        result = prime * result + ((videoPath == null) ? 0 : videoPath.hashCode());
+        result = prime * result + (isMy?1:0);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        VideoListItemData other = (VideoListItemData) obj;
+
+        return (isMy == other.isMy) &&
+                TextUtils.equals(name, other.name) &&
+                TextUtils.equals(videoPath, other.videoPath) &&
+                TextUtils.equals(time, other.time);
     }
 }

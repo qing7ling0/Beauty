@@ -11,9 +11,8 @@ import java.util.List;
  */
 
 public class VideoListItems extends CacheItem {
-    private static final String KEY = "VideoListItems";
-    private static final int EXPIRED_TIME = 1000;
-    private List<VideoListItemData> list;
+    public static final String KEY = "VideoListItems";
+    public static final int EXPIRED_TIME = 1000;
 
     public VideoListItems() {
         super(KEY, null, EXPIRED_TIME);
