@@ -71,6 +71,7 @@ public class BaseRecyclerView extends RecyclerView {
         }
     }
 
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent e) {
         final int action = MotionEventCompat.getActionMasked(e);

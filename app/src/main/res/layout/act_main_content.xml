@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".app.main.MainActivity"
+    tools:context=".app.view.main.MainActivity"
     tools:showIn="@layout/act_main_bar">
     <com.google.android.flexbox.FlexboxLayout
         android:layout_width="match_parent"
@@ -43,7 +43,7 @@
                 android:text="{ion-ios-box-outline}"
                 android:textSize="30sp" />
 
-            <com.lq.beauty.app.main.widget.RecordButton
+            <com.lq.beauty.app.view.main.widget.RecordButton
                 android:id="@+id/mainBtnRecord"
                 android:layout_width="75dp"
                 android:layout_height="75dp"

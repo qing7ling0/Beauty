@@ -1,4 +1,4 @@
-package com.lq.beauty.app.main;
+package com.lq.beauty.app.view.main;
 
 import android.Manifest;
 import android.content.Intent;
@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.PermissionChecker;
-import android.support.v4.view.LayoutInflaterCompat;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,12 +19,11 @@ import android.widget.TextView;
 import com.lq.beauty.R;
 import com.lq.beauty.app.base.BaseBeautyActivity;
 import com.lq.beauty.app.camera.render.CameraRender;
-import com.lq.beauty.app.main.widget.RecordButton;
-import com.lq.beauty.app.videoList.VideoListActivity;
+import com.lq.beauty.app.view.main.widget.RecordButton;
+import com.lq.beauty.app.view.videoList.VideoListActivity;
 import com.lq.beauty.base.cache.CacheManager;
 import com.lq.beauty.base.opengl.WGLSurfaceView;
 import com.lq.beauty.base.widget.BaseRecyclerView;
-import com.mikepenz.iconics.context.IconicsLayoutInflater;
 import com.mikepenz.iconics.view.IconicsButton;
 
 import butterknife.*;
@@ -34,9 +32,9 @@ public class MainActivity extends BaseBeautyActivity implements NavigationView.O
 
     @BindView(R.id.toolbar)
     protected Toolbar mToolbar;
-
-    @BindView(R.id.nav_view)
-    protected NavigationView mNavigationView;
+//
+//    @BindView(R.id.nav_view)
+//    protected NavigationView mNavigationView;
 
     @BindView(R.id.drawer_layout)
     protected DrawerLayout mDrawerLayout;
@@ -63,8 +61,7 @@ public class MainActivity extends BaseBeautyActivity implements NavigationView.O
     }
 
     @OnClick(R.id.mainBtnHistory) void onHistoryClicked() {
-        Intent intent = new Intent(MainActivity.this, VideoListActivity.class);
-        MainActivity.this.startActivity(intent);
+        VideoListActivity.show(MainActivity.this);
     }
 
     protected boolean isRecording;
@@ -73,11 +70,6 @@ public class MainActivity extends BaseBeautyActivity implements NavigationView.O
 
     @Override
     protected int getContentView() { return R.layout.act_main; }
-
-    @Override
-    protected void onLayoutInflater() {
-        LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
-    }
 
     @Override
     protected void initWidget() {

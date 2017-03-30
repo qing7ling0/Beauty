@@ -1,10 +1,8 @@
-package com.lq.beauty.app.main.widget;
+package com.lq.beauty.app.view.main.widget;
 
 import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -14,10 +12,7 @@ import android.util.AttributeSet;
 import android.util.Property;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
-import android.widget.Button;
 
-import com.lq.beauty.R;
-import com.lq.beauty.base.utils.Debug;
 import com.lq.beauty.base.utils.UIHelper;
 import com.lq.beauty.base.utils.WLog;
 

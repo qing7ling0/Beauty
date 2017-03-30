@@ -9,8 +9,8 @@
     <string name="myVideo">我的拍摄</string>
 
     <string name="menuShare">分享</string>
-    <string name="menuSetting">分享</string>
-    <string name="menuAbout">分享</string>
+    <string name="menuSetting">设置</string>
+    <string name="menuAbout">关于我们</string>
     <string name="menuWelcome">欢迎使用</string>
     <string name="menuUpdate">检查更新</string>
 </resources>

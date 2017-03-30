@@ -8,25 +8,29 @@
     app:flexDirection="row"
     app:alignItems="center"
     app:justifyContent="flex_start">
-    <com.mikepenz.iconics.view.IconicsButton
-        android:id="@+id/ibMenuBtn"
+    <com.mikepenz.iconics.view.IconicsTextView
+        android:id="@+id/itvMenuIcon"
         android:text="{ion-ios-camera-outline}"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minWidth="0dp"
-        android:background="@drawable/com_button"
+        android:background="@color/transparent"
         android:padding="5dp"
-        android:textSize="30sp"/>
+        android:textSize="25sp"/>
     <TextView
         android:id="@+id/tvMenuTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textColor="@color/black"
+        android:layout_gravity="start"
+        android:textAlignment="viewStart"
         android:paddingRight="5dp"
-        android:text="TextView" />
+        android:text="TextView"
+        app:layout_flexGrow="1"/>
     <Switch
         android:id="@+id/menuSwitch"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"/>
 </com.google.android.flexbox.FlexboxLayout>

@@ -70,9 +70,7 @@ public abstract class BaseFragment extends Fragment {
         return mRoot;
     }
 
-    protected void onBindViewBefore(View root) {
-        // ...
-    }
+    protected void onBindViewBefore(View root) {}
 
     @Override
     public void onDestroy() {
@@ -104,50 +102,6 @@ public abstract class BaseFragment extends Fragment {
         }
         return (T) mBundle.getSerializable(key);
     }
-
-    /***
-     * 从网络中加载数据
-     *
-     * @param viewId   view的id
-     * @param imageUrl 图片地址
-     */
-    protected void setImageFromNet(int viewId, String imageUrl) {
-        setImageFromNet(viewId, imageUrl, 0);
-    }
-
-    /***
-     * 从网络中加载数据
-     *
-     * @param viewId      view的id
-     * @param imageUrl    图片地址
-     * @param placeholder 图片地址为空时的资源
-     */
-    protected void setImageFromNet(int viewId, String imageUrl, int placeholder) {
-        ImageView imageView = findView(viewId);
-        setImageFromNet(imageView, imageUrl, placeholder);
-    }
-
-    /***
-     * 从网络中加载数据
-     *
-     * @param imageView imageView
-     * @param imageUrl  图片地址
-     */
-    protected void setImageFromNet(ImageView imageView, String imageUrl) {
-        setImageFromNet(imageView, imageUrl, 0);
-    }
-
-    /***
-     * 从网络中加载数据
-     *
-     * @param imageView   imageView
-     * @param imageUrl    图片地址
-     * @param placeholder 图片地址为空时的资源
-     */
-    protected void setImageFromNet(ImageView imageView, String imageUrl, int placeholder) {
-//        ImageLoader.loadImage(getImgLoader(), imageView, imageUrl, placeholder);
-    }
-
 
     protected void setText(int viewId, String text) {
         TextView textView = findView(viewId);
