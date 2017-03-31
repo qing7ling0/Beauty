@@ -100,7 +100,7 @@ public class CacheManager {
 
 		// 缓存过期
 		long a = System.currentTimeMillis();
-		if (System.currentTimeMillis() > cacheItem.getTimeStamp()) {
+		if (cacheItem.getTimeStamp() > 0 && System.currentTimeMillis() > cacheItem.getTimeStamp()) {
 			// 删除缓存
 			deleteCache(key);
 			return null;

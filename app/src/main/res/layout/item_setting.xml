@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/com_button"
-    android:padding="5px"
+    android:padding="15px"
     app:flexDirection="row"
     app:alignItems="center"
     app:justifyContent="flex_start">
@@ -31,7 +31,7 @@
             android:textColor="@color/gray"
             android:layout_gravity="start"
             android:textAlignment="viewStart"
-            android:paddingRight="5dp"
+            android:layout_marginLeft="5dp"
             android:text="TextView"
             app:layout_flexGrow="1"/>
 

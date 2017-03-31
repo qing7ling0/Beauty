@@ -13,4 +13,24 @@
     <string name="menuAbout">关于我们</string>
     <string name="menuWelcome">欢迎使用</string>
     <string name="menuUpdate">检查更新</string>
+
+    <string name="setWatermark">水印</string>
+    <string name="setFilter">默认滤镜</string>
+    <string name="setCameraRatio">默认画幅</string>
+    <string name="setVideoTime">默认时长</string>
+    <string name="setVideoHD">高清输出</string>
+
+    <string name="filter1">童话</string>
+    <string name="filter2">日出</string>
+    <string name="filter3">日落</string>
+    <string name="filter4">白猫</string>
+
+    <string name="cameraRatioSquare">方形</string>
+    <string name="cameraRatio16_9">标准宽屏</string>
+    <string name="cameraRatio21_9">超宽屏</string>
+    <string name="cameraRatioCircle">圆形</string>
+    <string name="cameraRatio9_16">竖屏</string>
+
+    <string name="videoTime">%s秒</string>
+    <string name="watermarkClose">OFF</string>
 </resources>

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/com_button"
-    android:padding="5px"
+    android:padding="10px"
     app:flexDirection="row"
     app:alignItems="center"
     app:justifyContent="flex_start">
@@ -16,7 +16,7 @@
         android:minWidth="0dp"
         android:background="@color/transparent"
         android:padding="5dp"
-        android:textSize="25sp"/>
+        android:textSize="22sp"/>
     <TextView
         android:id="@+id/tvMenuTitle"
         android:layout_width="wrap_content"

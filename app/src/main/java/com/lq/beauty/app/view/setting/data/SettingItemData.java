@@ -18,10 +18,12 @@ public class SettingItemData {
     // 是否有下一级
     private boolean hasNext;
 
-    public SettingItemData(int id, String title, short switchState) {
+    public SettingItemData(int id, String title, String subTitle, short switchState, boolean hasNext) {
         setID(id);
         setTitle(title);
+        setSubTitle(subTitle);
         setSwitchState(switchState);
+        setHasNext(hasNext);
     }
 
     public String getTitle() {

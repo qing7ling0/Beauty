@@ -244,6 +244,12 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter {
             notifyItemChanged(position);
         }
     }
+    public void updateItemWithIndex(int index) {
+        int position = getPosition(index);
+        if (getItemCount() > position) {
+            notifyItemChanged(position);
+        }
+    }
 
     public final void removeItem(T item) {
         if (this.mItems.contains(item)) {

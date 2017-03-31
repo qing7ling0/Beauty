@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.widget.FrameLayout;
 
 import com.lq.beauty.R;
+import com.lq.beauty.app.SettingManager;
 import com.lq.beauty.app.base.BaseBackBeautyActivity;
 import com.lq.beauty.app.view.setting.data.SettingItemData;
 import com.lq.beauty.app.view.setting.fragment.SettingFragment;
@@ -45,4 +46,9 @@ public class SettingActivity extends BaseBackBeautyActivity {
         context.startActivity(intent);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SettingManager.getInstance().save();
+    }
 }

@@ -19,11 +19,11 @@ public class CacheItem implements Serializable {
 	 *
 	 * @param key
 	 * @param data
-	 * @param expiredTime 单位秒
+	 * @param expiredTime 单位秒 -1:表示无限
 	 */
-	public CacheItem(final String key, Object data, final long expiredTime) {
+	public CacheItem(final String key, Object data, final int expiredTime) {
 		this.key = HashUtil.getMD5(key);
-		this.timeStamp = System.currentTimeMillis() + expiredTime * 1000;
+		this.timeStamp = expiredTime < 0 ? -1 : System.currentTimeMillis() + expiredTime * 1000;
 		this.data = data;
 	}
 

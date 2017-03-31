@@ -7,4 +7,10 @@ import com.lq.beauty.base.BaseApplication;
  */
 
 public class BeautyApplication extends BaseApplication {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        SettingManager.getInstance().read();
+    }
 }
