@@ -32,9 +32,6 @@ public class MainActivity extends BaseBeautyActivity implements NavigationView.O
 
     @BindView(R.id.toolbar)
     protected Toolbar mToolbar;
-//
-//    @BindView(R.id.nav_view)
-//    protected NavigationView mNavigationView;
 
     @BindView(R.id.drawer_layout)
     protected DrawerLayout mDrawerLayout;

@@ -11,8 +11,8 @@ import android.os.Build;
 public class WRendererBase implements GLSurfaceView.Renderer {
 
     protected long mLastTickInNanoSeconds;
-    protected int renderWidth;
-    protected int renderHeight;
+    protected int surfaceWidth;
+    protected int surfaceHeight;
     protected boolean mNativeInitCompleted = false;
     protected WGLSurfaceView mWGLSurfaceView = null;
 
@@ -21,13 +21,13 @@ public class WRendererBase implements GLSurfaceView.Renderer {
     }
 
     public void setRenderWidthAndHeight(final int surfaceWidth, final int surfaceHeight) {
-        this.renderWidth = surfaceWidth;
-        this.renderHeight = surfaceHeight;
+        this.surfaceWidth = surfaceWidth;
+        this.surfaceHeight = surfaceHeight;
     }
 
     @Override
     public void onSurfaceCreated(final GL10 GL10, final EGLConfig EGLConfig) {
-        WRendererBase.nativeInit(this.renderWidth, this.renderHeight);
+        WRendererBase.nativeInit(this.surfaceWidth, this.surfaceHeight);
         this.mLastTickInNanoSeconds = System.nanoTime();
         mNativeInitCompleted = true;
     }

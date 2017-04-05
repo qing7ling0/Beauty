@@ -19,7 +19,8 @@
             <com.lq.beauty.base.opengl.WGLSurfaceView
                 android:id="@+id/CameraSurfaceView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"/>
         </com.lq.beauty.base.widget.SquareRelativeLayout>
 
         <com.google.android.flexbox.FlexboxLayout

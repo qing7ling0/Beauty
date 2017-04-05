@@ -72,8 +72,15 @@ public class SettingManager implements Serializable {
         CacheManager.getInstance().addCache(new CacheItem(SETTING_CACHE_KEY, this, -1));
     }
 
-    public SettingManager read() {
-        return (SettingManager)CacheManager.getInstance().getCache(SETTING_CACHE_KEY);
+    public void read() {
+        try {
+            SettingManager sm = (SettingManager)CacheManager.getInstance().getCache(SETTING_CACHE_KEY);
+            if (null != sm) {
+                SettingManager.instance = sm;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public int getDefaultFilter() {

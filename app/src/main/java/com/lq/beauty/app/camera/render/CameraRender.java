@@ -31,6 +31,11 @@ public class CameraRender extends WRendererBase implements SurfaceTexture.OnFram
     private int surfaceTextureID = -1;
     private boolean recordingEnabled;
     private int recordingStatus;
+    private int designWidth;
+    private int designHeight;
+    private ViewPortRender viewPortRender;
+
+//    private
 
     private static TextureMovieHandler videoHandler = new TextureMovieHandler();
 
@@ -39,6 +44,12 @@ public class CameraRender extends WRendererBase implements SurfaceTexture.OnFram
         recordingStatus = -1;
         recordingEnabled = false;
         videoHandler.setMovieRender(this);
+        viewPortRender = new ViewPortRender();
+    }
+
+    public void setDesignWidthAndHeight(int width, int height) {
+        this.designWidth = width;
+        this.designHeight = height;
     }
 
     @Override
@@ -65,6 +76,8 @@ public class CameraRender extends WRendererBase implements SurfaceTexture.OnFram
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         super.onSurfaceChanged(gl, width, height);
+
+        viewPortRender.setSize(width, height);
 
         CameraEngine.setScreenPreviewSize(width, height);
         if (CameraEngine.getCamera() == null)
@@ -96,12 +109,12 @@ public class CameraRender extends WRendererBase implements SurfaceTexture.OnFram
                 switch (recordingStatus) {
                     case RECORDING_OFF:
                         WCameraInfo info = CameraEngine.getCameraInfo();
-                        videoHandler.setPreviewSize(info.previewWidth, info.pictureHeight);
+                        videoHandler.setPreviewSize(info.previewWidth, info.previewHeight);
                         videoHandler.startRecording(
                                 new TextureMovieHandler.EncoderConfig(
                                         new File(CameraHelper.createVideoFilePath()),
-                                        renderWidth,
-                                        renderHeight,
+                                        surfaceWidth,
+                                        surfaceHeight,
                                         EGL14.eglGetCurrentContext(),
                                         info));
                         recordingStatus = RECORDING_ON;
@@ -134,6 +147,7 @@ public class CameraRender extends WRendererBase implements SurfaceTexture.OnFram
 
     @Override
     protected void onRenderAfter(final GL10 gl) {
+        viewPortRender.render(gl);
     }
 
 //    @Override

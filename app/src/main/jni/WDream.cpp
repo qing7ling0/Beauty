@@ -35,7 +35,7 @@ namespace dream {
         checkGlError("glClearColor");
         glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
         checkGlError("glClear");
-        glViewport(0,0,_width, _height);
+        glViewport(0, 0, _width, _height);
 
         _pRenderer->Render();
     }
