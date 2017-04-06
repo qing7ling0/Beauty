@@ -8,6 +8,8 @@ import android.view.View;
 
 import com.lq.beauty.R;
 import com.lq.beauty.app.BeautyApplication;
+import com.lq.beauty.app.RxBus.RxBus;
+import com.lq.beauty.app.RxBus.RxBusEvent;
 import com.lq.beauty.app.SettingManager;
 import com.lq.beauty.app.view.setting.adapter.SettingListAdapter;
 import com.lq.beauty.app.view.setting.data.SettingItemData;
@@ -107,6 +109,7 @@ public class SettingFragment extends BaseFragment {
                                 data.setSubTitle(SettingManager.getInstance().getDefaultFilterText());
                                 settingListAdapter.updateItem(position);
                                 dialog.dismiss();
+                                RxBus.getInstance().post(new RxBusEvent(1));
                             }
                         }
                 );
@@ -115,7 +118,7 @@ public class SettingFragment extends BaseFragment {
                 showSelecterDialog(
                         data.getTitle(),
                         resIdArrToTextArr(SettingManager.ARR_VIDEO_CAMERA_RATIO_TEXTS),
-                        SettingManager.getInstance().getDefaultFilter(),
+                        SettingManager.getInstance().getCameraRatio(),
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -123,6 +126,7 @@ public class SettingFragment extends BaseFragment {
                                 data.setSubTitle(SettingManager.getInstance().getCameraRatioText());
                                 settingListAdapter.updateItem(position);
                                 dialog.dismiss();
+                                RxBus.getInstance().post(new RxBusEvent(2));
                             }
                         }
                 );
@@ -150,6 +154,7 @@ public class SettingFragment extends BaseFragment {
                 );
                 break;
             case SettingManager.SETTING_ID_DEFAULT_WATERMARK:
+                RxBus.getInstance().post(new RxBusEvent(3));
                 break;
             case SettingManager.SETTING_ID_DEFAULT_VIDEO_HD:
                 data.setSwitchState(data.getSwitchState() == SettingItemData.SWITCH_CLOSE ? SettingItemData.SWITCH_OPEN : SettingItemData.SWITCH_CLOSE);

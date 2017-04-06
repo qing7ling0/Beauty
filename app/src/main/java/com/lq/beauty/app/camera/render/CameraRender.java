@@ -6,6 +6,7 @@ import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 
+import com.lq.beauty.app.SettingManager;
 import com.lq.beauty.app.camera.CameraEngine;
 import com.lq.beauty.app.camera.CameraHelper;
 import com.lq.beauty.app.camera.WCameraInfo;
@@ -31,9 +32,6 @@ public class CameraRender extends WRendererBase implements SurfaceTexture.OnFram
     private int surfaceTextureID = -1;
     private boolean recordingEnabled;
     private int recordingStatus;
-    private int designWidth;
-    private int designHeight;
-    private ViewPortRender viewPortRender;
 
 //    private
 
@@ -44,17 +42,12 @@ public class CameraRender extends WRendererBase implements SurfaceTexture.OnFram
         recordingStatus = -1;
         recordingEnabled = false;
         videoHandler.setMovieRender(this);
-        viewPortRender = new ViewPortRender();
-    }
-
-    public void setDesignWidthAndHeight(int width, int height) {
-        this.designWidth = width;
-        this.designHeight = height;
     }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         super.onSurfaceCreated(gl, config);
+
         if (mWGLSurfaceView != null) {
             mWGLSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         }
@@ -76,9 +69,6 @@ public class CameraRender extends WRendererBase implements SurfaceTexture.OnFram
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         super.onSurfaceChanged(gl, width, height);
-
-        viewPortRender.setSize(width, height);
-
         CameraEngine.setScreenPreviewSize(width, height);
         if (CameraEngine.getCamera() == null)
             CameraEngine.openCamera();
@@ -147,7 +137,6 @@ public class CameraRender extends WRendererBase implements SurfaceTexture.OnFram
 
     @Override
     protected void onRenderAfter(final GL10 gl) {
-        viewPortRender.render(gl);
     }
 
 //    @Override

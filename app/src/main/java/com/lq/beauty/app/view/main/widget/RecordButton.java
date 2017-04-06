@@ -7,6 +7,9 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Property;
@@ -23,6 +26,11 @@ import static com.lq.beauty.R.*;
  */
 
 public class RecordButton extends android.support.v7.widget.AppCompatButton {
+    private static final int RECORD_STATUS_NONE = 0;
+    private static final int RECORD_STATUS_STEP1 = 1;
+    private static final int RECORD_STATUS_STEP2 = 2;
+    private static final int RECORD_STATUS_END = 3;
+
     private Paint mPaint;
     private float mAlpha;
     private int mWidth;
@@ -32,6 +40,7 @@ public class RecordButton extends android.support.v7.widget.AppCompatButton {
 
     private float mRecordCountDown;
     private boolean mIsRecording;
+    private int recordStatus;
 
     public RecordButton(Context context) {
         super(context);
@@ -58,8 +67,9 @@ public class RecordButton extends android.support.v7.widget.AppCompatButton {
         mPaint = new Paint();
         mPaint.setColor(0xff000000);
         mPaint.setAlpha((int) (255*mAlpha));
-        mPaint.setStrokeWidth(2);
         mPaint.setAntiAlias(true);
+
+        recordStatus = RECORD_STATUS_NONE;
     }
 
     @Override
@@ -77,22 +87,72 @@ public class RecordButton extends android.support.v7.widget.AppCompatButton {
         float cx = mWidth / 2;
         float cy = mHeight / 2;
 
-        mPaint.setColor(mCircleColor);
-        canvas.drawCircle(mWidth/2, mHeight/2, mWidth/2, mPaint);
-        if (mIsRecording) {
-            r = r - UIHelper.dp2px(2);
-            mPaint.setColor(mRingColor);
-            canvas.drawCircle(cx, cy, r, mPaint);
+        switch (recordStatus) {
+            case RECORD_STATUS_NONE:
+                break;
+            case RECORD_STATUS_STEP1:
+                float per1 = Math.min(mRecordCountDown / 0.1f, 1);
 
-            r = r - UIHelper.dp2px(5);
+                mPaint.setColor(Color.GRAY);
+                canvas.drawCircle(cx, cy, r, mPaint);
+
+                mPaint.setColor(mCircleColor);
+                mPaint.setAlpha((int) (255*(1-per1)));
+                canvas.drawCircle(cx, cy, r, mPaint);
+
+                r = r - UIHelper.dp2px(2);
+                mPaint.setColor(mRingColor);
+                canvas.drawCircle(cx, cy, r, mPaint);
+
+                r = r - UIHelper.dp2px(5);
+                mPaint.setColor(mCircleColor);
+                mPaint.setAlpha((int) (255*(1-per1)));
+                canvas.drawCircle(cx, cy, r, mPaint);
+                r = r + UIHelper.dp2px(5);
+
+                mPaint.setColor(Color.WHITE);
+                mPaint.setAlpha((int) (255*(per1)));
+                canvas.drawCircle(cx, cy, r*per1, mPaint);
+                if (per1 >= 1) recordStatus = RECORD_STATUS_STEP2;
+                break;
+            case RECORD_STATUS_STEP2:
+
+                mPaint.setColor(Color.GRAY);
+                canvas.drawCircle(cx, cy, r, mPaint);
+
+                RectF rect= new RectF(cx-r, cy-r, cx+r, cy+r);
+                Path path = new Path();
+                path.moveTo(cx, cy);
+                path.arcTo(rect, -90, 360*mRecordCountDown, false);
+                canvas.save();
+                canvas.clipPath(path);
+                mPaint.setAlpha(255);
+                mPaint.setColor(mCircleColor);
+                canvas.drawCircle(cx, cy, r, mPaint);
+                canvas.restore();
+
+                r = r - UIHelper.dp2px(2);
+                mPaint.setColor(Color.WHITE);
+                mPaint.setAlpha(255);
+                canvas.drawCircle(cx, cy, r, mPaint);
+
+                mPaint.setColor(Color.BLACK);
+                mPaint.setTextAlign(Paint.Align.CENTER);
+                mPaint.setTextSize(UIHelper.dp2px(20));
+                canvas.drawText("1", cx, cy, mPaint);
+                if (mRecordCountDown >= 1) {
+                    recordStatus = RECORD_STATUS_END;
+                }
+                break;
+            case RECORD_STATUS_END:
+                break;
+        }
+        if (recordStatus == RECORD_STATUS_NONE || recordStatus == RECORD_STATUS_END) {
+
+            mPaint.setAlpha(255);
             mPaint.setColor(mCircleColor);
-            mPaint.setAlpha((int) (255*(1-mRecordCountDown)));
             canvas.drawCircle(cx, cy, r, mPaint);
 
-            mPaint.setColor(Color.BLACK);
-            mPaint.setAlpha((int) (255*(mRecordCountDown)));
-            canvas.drawCircle(cx, cy, r*mRecordCountDown, mPaint);
-        } else {
             r = r - UIHelper.dp2px(2);
             mPaint.setColor(mRingColor);
             canvas.drawCircle(cx, cy, r, mPaint);
@@ -109,13 +169,16 @@ public class RecordButton extends android.support.v7.widget.AppCompatButton {
      * =============================================================================================
      */
     private static final Interpolator ANIMATION_INTERPOLATOR = new DecelerateInterpolator();
-    private static final int ANIMATION_DURATION = 3000;
+    private static final int ANIMATION_DURATION = 10000;
     private ObjectAnimator mAnimator;
 
     public void animateCheckedState() {
+    }
+
+    public void start() {
         AnimatorProperty property = new AnimatorProperty();
         property.progress = 1;
-        mIsRecording = true;
+        recordStatus = RECORD_STATUS_STEP1;
         if (mAnimator == null) {
             mAnimator = ObjectAnimator.ofObject(this, ANIM_VALUE, new AnimatorEvaluator(new AnimatorProperty()), property);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -128,6 +191,10 @@ public class RecordButton extends android.support.v7.widget.AppCompatButton {
             mAnimator.setObjectValues(property);
         }
         mAnimator.start();
+    }
+
+    public void stop() {
+        recordStatus = RECORD_STATUS_NONE;
     }
 
     /**

@@ -148,4 +148,32 @@ public class SettingManager implements Serializable {
     public void setWatermarkText(String watermarkText) {
         this.watermarkText = watermarkText;
     }
+
+    public static int getVideoCameraRatioWidth(int ratio, int width) {
+        switch (ratio) {
+            case SettingManager.VIDEO_CAMERA_RATIO_9_16:
+                return (int) (width*9.0f/ 16.0f);
+            case SettingManager.VIDEO_CAMERA_RATIO_SQUARE:
+            case SettingManager.VIDEO_CAMERA_RATIO_16_9:
+            case SettingManager.VIDEO_CAMERA_RATIO_21_9:
+            case SettingManager.VIDEO_CAMERA_RATIO_CIRCLE:
+            default:
+                return width;
+        }
+    }
+
+
+    public static int getVideoCameraRatioHeight(int ratio, int height) {
+        switch (ratio) {
+            case SettingManager.VIDEO_CAMERA_RATIO_16_9:
+                return (int) (height*9.0f/ 16.0f);
+            case SettingManager.VIDEO_CAMERA_RATIO_21_9:
+                return (int) (height*9.0f/ 21.0f);
+            case SettingManager.VIDEO_CAMERA_RATIO_CIRCLE:
+            case SettingManager.VIDEO_CAMERA_RATIO_9_16:
+            case SettingManager.VIDEO_CAMERA_RATIO_SQUARE:
+            default:
+                return height;
+        }
+    }
 }

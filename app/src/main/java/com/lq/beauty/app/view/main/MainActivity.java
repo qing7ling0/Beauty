@@ -17,16 +17,25 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.lq.beauty.R;
+import com.lq.beauty.app.RxBus.RxBus;
+import com.lq.beauty.app.RxBus.RxBusEvent;
+import com.lq.beauty.app.SettingManager;
 import com.lq.beauty.app.base.BaseBeautyActivity;
 import com.lq.beauty.app.camera.render.CameraRender;
+import com.lq.beauty.app.view.main.widget.CameraRatioTransformView;
 import com.lq.beauty.app.view.main.widget.RecordButton;
 import com.lq.beauty.app.view.videoList.VideoListActivity;
 import com.lq.beauty.base.cache.CacheManager;
 import com.lq.beauty.base.opengl.WGLSurfaceView;
+import com.lq.beauty.base.utils.UIHelper;
+import com.lq.beauty.base.utils.ViewTransform;
 import com.lq.beauty.base.widget.BaseRecyclerView;
 import com.mikepenz.iconics.view.IconicsButton;
 
+import java.util.Set;
+
 import butterknife.*;
+import io.reactivex.functions.Consumer;
 
 public class MainActivity extends BaseBeautyActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -51,10 +60,13 @@ public class MainActivity extends BaseBeautyActivity implements NavigationView.O
     @BindView(R.id.mainBtnRecord)
     protected RecordButton mBtnRecord;
 
+    @BindView(R.id.CameraRatioTransformView)
+    protected CameraRatioTransformView mCameraRatioTransformView;
+
     @OnClick(R.id.mainBtnRecord) void onRecordClicked() {
-        mBtnRecord.animateCheckedState();
+        mBtnRecord.start();
         isRecording = !isRecording;
-        cameraRender.changeRecordingState(isRecording);
+//        cameraRender.changeRecordingState(isRecording);
     }
 
     @OnClick(R.id.mainBtnHistory) void onHistoryClicked() {
@@ -92,7 +104,9 @@ public class MainActivity extends BaseBeautyActivity implements NavigationView.O
 
             @Override
             public void onDrawerClosed(View drawerView) {
-
+                mCameraRatioTransformView.setCameraRatio(SettingManager.getInstance().getCameraRatio());
+                ViewTransform.setViewHeight(mWGLSurfaceView, mCameraRatioTransformView.getHeight());
+                ViewTransform.setViewWidth(mWGLSurfaceView, mCameraRatioTransformView.getWidth());
             }
 
             @Override
@@ -110,6 +124,43 @@ public class MainActivity extends BaseBeautyActivity implements NavigationView.O
 
         mainMenu = new MainMenu(this, (BaseRecyclerView) findViewById(R.id.brvMenuList));
         mainMenu.initWidget();
+
+        RxBus.getInstance().toObservable(RxBusEvent.class)
+                .subscribe(new Consumer<RxBusEvent>() {
+                    @Override
+                    public void accept(RxBusEvent evt) throws Exception {
+                        switch (evt.getId()) {
+                            case 1:
+                                break;
+                            case 2:
+                            {
+//                                cameraRender.setCurrentCameraRatio(SettingManager.getInstance().getCameraRatio());
+                            }
+                                break;
+                            case 3:
+                                break;
+                        }
+                    }
+                });
+
+
+        RxBus.getInstance().toObservable(CameraRatioTransformView.RxBusEventChangeCameraRatio.class)
+                .subscribe(new Consumer<CameraRatioTransformView.RxBusEventChangeCameraRatio>() {
+                    @Override
+                    public void accept(CameraRatioTransformView.RxBusEventChangeCameraRatio evt) throws Exception {
+                        ViewTransform.setViewHeight(
+                                mWGLSurfaceView,
+                                SettingManager.getVideoCameraRatioHeight(
+                                        SettingManager.getInstance().getCameraRatio(),
+                                        mCameraRatioTransformView.getHeight()));
+
+                        ViewTransform.setViewWidth(
+                                mWGLSurfaceView,
+                                SettingManager.getVideoCameraRatioWidth(
+                                        SettingManager.getInstance().getCameraRatio(),
+                                        mCameraRatioTransformView.getWidth()));
+                    }
+                });
     }
 
     @Override
@@ -117,6 +168,7 @@ public class MainActivity extends BaseBeautyActivity implements NavigationView.O
         isRecording = false;
         CacheManager.getInstance().initCacheDir();
         mainMenu.initData();
+        mCameraRatioTransformView.setCameraRatio(SettingManager.getInstance().getCameraRatio());
     }
 
     @Override

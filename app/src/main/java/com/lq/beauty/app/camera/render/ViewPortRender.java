@@ -40,7 +40,7 @@ public class ViewPortRender {
                     "  gl_FragColor = vColor;\n" +
                     "}";
 
-    float color[] = {0.0f, 1.0f, 0f, 1.0f};//绿色不透明
+    float color[] = {1.0f, 1.0f, 1.0f, 1.0f};//绿色不透明
 
     private int mProgram = -1;
     private int mPositionHandle;
@@ -69,13 +69,23 @@ public class ViewPortRender {
         rectangles.add(new Rectangle(new Vector4F(0,0,0,0), new Vector4F(0,0,0,0))); // right
         rectangles.add(new Rectangle(new Vector4F(0,0,0,0), new Vector4F(0,0,0,0))); // top
         rectangles.add(new Rectangle(new Vector4F(0,0,0,0), new Vector4F(0,0,0,0))); // bottom
-        sizeChangeStatus = SIZE_CHANGE_STATUS_BEGAN;
+        sizeChangeStatus = SIZE_CHANGE_STATUS_NONE;
     }
 
     public void setSize(int width, int height) {
         this.width = width;
         this.height = height;
+        Rectangle rectLeft = rectangles.get(0);
+        Rectangle rectRight = rectangles.get(1);
+        Rectangle rectTop = rectangles.get(2);
+        Rectangle rectBottom = rectangles.get(3);
+
+        rectLeft.setFromCoords(new Vector4F(0, 0, 0, height));
+        rectRight.setFromCoords(new Vector4F(width, 0, 0, height));
+        rectTop.setFromCoords(new Vector4F(0, height, width, 0));
+        rectBottom.setFromCoords(new Vector4F(0, 0, width, 0));
     }
+
     public void setToSize(int width, int height) {
         this.toWidth = width;
         this.toHeight = height;
@@ -93,6 +103,8 @@ public class ViewPortRender {
         return shader;
     }
 
+    static int disk = 1;
+
     private void update() {
         if (mProgram == -1) {
             int vertexShader    = loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);
@@ -104,28 +116,48 @@ public class ViewPortRender {
             GLES20.glLinkProgram(mProgram);
         }
 
-        vertexBuffer.reset();
         if (sizeChangeStatus == SIZE_CHANGE_STATUS_NONE) {
         } else {
             switch (sizeChangeStatus) {
                 case SIZE_CHANGE_STATUS_BEGAN:
-                    Rectangle rect = rectangles.get(0);
-                    rect.setFromCoords(new Vector4F(0,0, width, height));
-                    rect.setToCoords(new Vector4F(0, 0, width, height));
+                    vertexBuffer.reset();
+                    Rectangle rectLeft = rectangles.get(0);
+                    Rectangle rectRight = rectangles.get(1);
+                    Rectangle rectTop = rectangles.get(2);
+                    Rectangle rectBottom = rectangles.get(3);
+
+                    int w = (width - toWidth) / 2;
+                    int h = (height - toHeight) / 2;
+
+                    rectLeft.setToCoords(new Vector4F(0, 0, w, height));
+                    rectRight.setToCoords(new Vector4F(width-w, 0, w, height));
+                    rectTop.setToCoords(new Vector4F(0, height-h, width, h));
+                    rectBottom.setToCoords(new Vector4F(0, 0, width, h));
+
+                    sizeChangeStatus = SIZE_CHANGE_STATUS_CHANGING;
+                    disk = 0;
                     break;
                 case SIZE_CHANGE_STATUS_CHANGING:
+                    boolean isChange = true;
+                    for(int i=0; i<rectangles.size(); i++) {
+                        Rectangle rect = rectangles.get(i);
+                        rect.update(disk*1.0f / 2);
+                        vertexBuffer.put(rect.getRenderVertex(width, height), indexVertex);
+                        if (!rect.isChanging) isChange = false;
+//                        break;
+                    }
+                    vertexBuffer.position(0);
+                    if (!isChange) {
+                        sizeChangeStatus = SIZE_CHANGE_STATUS_FINISH;
+                    }
+                    disk++;
                     break;
                 case SIZE_CHANGE_STATUS_FINISH:
+                    sizeChangeStatus = SIZE_CHANGE_STATUS_NONE;
                     break;
-            }
-            for(int i=0; i<rectangles.size(); i++) {
-                Rectangle rect = rectangles.get(i);
-                rect.update(1);
-                vertexBuffer.put(rect.getRenderVertex(width, height), indexVertex);
             }
         }
 
-        vertexBuffer.position(0);
 
     }
 
@@ -218,6 +250,8 @@ public class ViewPortRender {
         Vector4F curCoords;
         Vector4F dirCoords;
 
+        boolean isChanging;
+
 
         float color[] = {0.0f, 1.0f, 0f, 1.0f};//绿色不透明
 
@@ -226,18 +260,22 @@ public class ViewPortRender {
             fromCoords = from;
             toCoords = to;
             dirCoords = new Vector4F(0, 0, 0, 0);
-            curCoords = new Vector4F(0, 0, 0, 0);
+            isChanging = false;
         }
 
         public void setToCoords(Vector4F toCoords) {
             this.toCoords = toCoords;
             if (null != curCoords) {
-                this.fromCoords = curCoords;
-                this.dirCoords.x = toCoords.x - fromCoords.x;
-                this.dirCoords.y = toCoords.y - fromCoords.y;
-                this.dirCoords.z = toCoords.z - fromCoords.z;
-                this.dirCoords.w = toCoords.w - fromCoords.w;
+                this.fromCoords.x = curCoords.x;
+                this.fromCoords.y = curCoords.y;
+                this.fromCoords.z = curCoords.z;
+                this.fromCoords.w = curCoords.w;
             }
+            this.dirCoords.x = toCoords.x - fromCoords.x;
+            this.dirCoords.y = toCoords.y - fromCoords.y;
+            this.dirCoords.z = toCoords.z - fromCoords.z;
+            this.dirCoords.w = toCoords.w - fromCoords.w;
+            isChanging = true;
         }
 
         public void setFromCoords(Vector4F fromCoords) {
@@ -245,13 +283,18 @@ public class ViewPortRender {
         }
 
         public void update(float f) {
-            if (toCoords.equals(curCoords)) {
-
-            } else {
-                curCoords.x = fromCoords.x + dirCoords.x * f;
-                curCoords.y = fromCoords.y + dirCoords.y * f;
-                curCoords.z = fromCoords.z + dirCoords.z * f;
-                curCoords.w = fromCoords.w + dirCoords.w * f;
+            if (isChanging) {
+                if (null == curCoords) {
+                    curCoords = new Vector4F(fromCoords.x, fromCoords.y, fromCoords.z, fromCoords.w);
+                }
+                if (toCoords.equals(curCoords)) {
+                    isChanging = false;
+                } else {
+                    curCoords.x = fromCoords.x + dirCoords.x * f;
+                    curCoords.y = fromCoords.y + dirCoords.y * f;
+                    curCoords.z = fromCoords.z + dirCoords.z * f;
+                    curCoords.w = fromCoords.w + dirCoords.w * f;
+                }
             }
         }
 
