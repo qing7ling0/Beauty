@@ -63,17 +63,10 @@ public class MainActivity extends BaseBeautyActivity implements NavigationView.O
     @BindView(R.id.CameraRatioTransformView)
     protected CameraRatioTransformView mCameraRatioTransformView;
 
-    @OnClick(R.id.mainBtnRecord) void onRecordClicked() {
-        mBtnRecord.start();
-        isRecording = !isRecording;
-//        cameraRender.changeRecordingState(isRecording);
-    }
-
     @OnClick(R.id.mainBtnHistory) void onHistoryClicked() {
         VideoListActivity.show(MainActivity.this);
     }
 
-    protected boolean isRecording;
     protected CameraRender cameraRender;
     protected MainMenu mainMenu;
 
@@ -144,6 +137,16 @@ public class MainActivity extends BaseBeautyActivity implements NavigationView.O
                 });
 
 
+        RxBus.getInstance().toObservable(RecordButton.RxBusEvent.class)
+                .subscribe(new Consumer<RecordButton.RxBusEvent>() {
+                    @Override
+                    public void accept(RecordButton.RxBusEvent evt) throws Exception {
+                        if (evt.recording) {
+                            cameraRender.changeRecordingState(evt.recording);
+                        }
+                    }
+                });
+
         RxBus.getInstance().toObservable(CameraRatioTransformView.RxBusEventChangeCameraRatio.class)
                 .subscribe(new Consumer<CameraRatioTransformView.RxBusEventChangeCameraRatio>() {
                     @Override
@@ -165,7 +168,6 @@ public class MainActivity extends BaseBeautyActivity implements NavigationView.O
 
     @Override
     protected void initData() {
-        isRecording = false;
         CacheManager.getInstance().initCacheDir();
         mainMenu.initData();
         mCameraRatioTransformView.setCameraRatio(SettingManager.getInstance().getCameraRatio());
